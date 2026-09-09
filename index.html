@@ -2,39 +2,10 @@
 <html lang="es" class="dark h-full">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0a0a0a">
+    <meta name="mobile-web-app-capable" content="yes">
     <title>Informe Causa Malvinas en la Conversación Digital — Hegemón</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        if (window.tailwind) tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        hg: {
-                            green: '#00FC65',
-                            green2: '#00d956',
-                            dark: '#0a0a0a',
-                            panel: '#161616',
-                            panel2: '#1e1e1e',
-                            line: '#2e2e2e',
-                            txt: '#e8e8e8',
-                            mut: '#9a9a9a'
-                        },
-                        negativo: '#ff4d4d',
-                        neutro: '#9a9a9a',
-                        positivo: '#00FC65'
-                    },
-                    fontFamily: {
-                        sans: ['Archivo', 'Helvetica Neue', 'Arial', 'sans-serif'],
-                        display: ['Archivo Black', 'Archivo', 'sans-serif'],
-                        round: ['Nunito', 'Archivo', 'sans-serif']
-                    }
-                }
-            }
-        }
-    </script>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -48,6 +19,8 @@
     </script>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Tailwind precompilado: sin CDN, sin compilación en el navegador -->
+    <style>*,:after,:before{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgba(59,130,246,.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgba(59,130,246,.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/*! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com*/*,:after,:before{box-sizing:border-box;border:0 solid #e5e7eb}:after,:before{--tw-content:""}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;-o-tab-size:4;tab-size:4;font-family:Archivo,Helvetica Neue,Arial,sans-serif;font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0}fieldset,legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::-moz-placeholder,textarea::-moz-placeholder{opacity:1;color:#9ca3af}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.visible{visibility:visible}.fixed{position:fixed}.absolute{position:absolute}.relative{position:relative}.inset-0{inset:0}.left-1\/2{left:50%}.top-1\/2{top:50%}.z-10{z-index:10}.z-30{z-index:30}.z-50{z-index:50}.mx-3{margin-left:.75rem;margin-right:.75rem}.mx-auto{margin-left:auto;margin-right:auto}.my-1{margin-top:.25rem;margin-bottom:.25rem}.my-2{margin-top:.5rem;margin-bottom:.5rem}.my-4{margin-top:1rem;margin-bottom:1rem}.my-7{margin-top:1.75rem;margin-bottom:1.75rem}.mb-1{margin-bottom:.25rem}.mb-2{margin-bottom:.5rem}.mb-3{margin-bottom:.75rem}.mb-4{margin-bottom:1rem}.mb-5{margin-bottom:1.25rem}.mb-6{margin-bottom:1.5rem}.mb-8{margin-bottom:2rem}.ml-2{margin-left:.5rem}.ml-auto{margin-left:auto}.mr-1\.5{margin-right:.375rem}.mr-2{margin-right:.5rem}.mt-0\.5{margin-top:.125rem}.mt-1{margin-top:.25rem}.mt-1\.5{margin-top:.375rem}.mt-10{margin-top:2.5rem}.mt-12{margin-top:3rem}.mt-2{margin-top:.5rem}.mt-3{margin-top:.75rem}.mt-4{margin-top:1rem}.mt-5{margin-top:1.25rem}.mt-6{margin-top:1.5rem}.mt-8{margin-top:2rem}.mt-auto{margin-top:auto}.line-clamp-2{overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2}.block{display:block}.inline-block{display:inline-block}.flex{display:flex}.inline-flex{display:inline-flex}.table{display:table}.grid{display:grid}.hidden{display:none}.h-1{height:.25rem}.h-10{height:2.5rem}.h-11{height:2.75rem}.h-12{height:3rem}.h-16{height:4rem}.h-2{height:.5rem}.h-2\.5{height:.625rem}.h-3{height:.75rem}.h-32{height:8rem}.h-4{height:1rem}.h-5{height:1.25rem}.h-56{height:14rem}.h-6{height:1.5rem}.h-64{height:16rem}.h-8{height:2rem}.h-\[300px\]{height:300px}.h-\[340px\]{height:340px}.h-auto{height:auto}.h-full{height:100%}.max-h-\[46vh\]{max-height:46vh}.max-h-\[48vh\]{max-height:48vh}.max-h-\[56vh\]{max-height:56vh}.max-h-\[62vh\]{max-height:62vh}.max-h-\[64vh\]{max-height:64vh}.w-10{width:2.5rem}.w-11{width:2.75rem}.w-12{width:3rem}.w-16{width:4rem}.w-2{width:.5rem}.w-2\.5{width:.625rem}.w-24{width:6rem}.w-3{width:.75rem}.w-4{width:1rem}.w-5{width:1.25rem}.w-56{width:14rem}.w-6{width:1.5rem}.w-64{width:16rem}.w-8{width:2rem}.w-\[520px\]{width:520px}.w-\[560px\]{width:560px}.w-fit{width:-moz-fit-content;width:fit-content}.w-full{width:100%}.min-w-0{min-width:0}.min-w-\[560px\]{min-width:560px}.min-w-\[680px\]{min-width:680px}.max-w-2xl{max-width:42rem}.max-w-3xl{max-width:48rem}.max-w-4xl{max-width:56rem}.max-w-6xl{max-width:72rem}.max-w-7xl{max-width:80rem}.max-w-\[80vw\]{max-width:80vw}.max-w-\[85vw\]{max-width:85vw}.max-w-xl{max-width:36rem}.max-w-xs{max-width:20rem}.flex-1{flex:1 1 0%}.shrink-0{flex-shrink:0}.border-collapse{border-collapse:collapse}.-translate-x-1\/2{--tw-translate-x:-50%}.-translate-x-1\/2,.-translate-y-1\/2{transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.-translate-y-1\/2{--tw-translate-y:-50%}.transform{transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}@keyframes pulse{50%{opacity:.5}}.animate-pulse{animation:pulse 2s cubic-bezier(.4,0,.6,1) infinite}.cursor-pointer{cursor:pointer}.grid-cols-1{grid-template-columns:repeat(1,minmax(0,1fr))}.grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}.flex-col{flex-direction:column}.flex-wrap{flex-wrap:wrap}.items-start{align-items:flex-start}.items-end{align-items:flex-end}.items-center{align-items:center}.items-baseline{align-items:baseline}.items-stretch{align-items:stretch}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-1{gap:.25rem}.gap-1\.5{gap:.375rem}.gap-2{gap:.5rem}.gap-3{gap:.75rem}.gap-4{gap:1rem}.gap-6{gap:1.5rem}.gap-8{gap:2rem}.space-x-2>:not([hidden])~:not([hidden]){--tw-space-x-reverse:0;margin-right:calc(.5rem*var(--tw-space-x-reverse));margin-left:calc(.5rem*(1 - var(--tw-space-x-reverse)))}.space-x-3>:not([hidden])~:not([hidden]){--tw-space-x-reverse:0;margin-right:calc(.75rem*var(--tw-space-x-reverse));margin-left:calc(.75rem*(1 - var(--tw-space-x-reverse)))}.space-y-3>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(.75rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(.75rem*var(--tw-space-y-reverse))}.space-y-3\.5>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(.875rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(.875rem*var(--tw-space-y-reverse))}.space-y-4>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem*var(--tw-space-y-reverse))}.divide-y>:not([hidden])~:not([hidden]){--tw-divide-y-reverse:0;border-top-width:calc(1px*(1 - var(--tw-divide-y-reverse)));border-bottom-width:calc(1px*var(--tw-divide-y-reverse))}.divide-white\/10>:not([hidden])~:not([hidden]){border-color:hsla(0,0%,100%,.1)}.overflow-hidden{overflow:hidden}.overflow-x-auto{overflow-x:auto}.overflow-y-auto{overflow-y:auto}.whitespace-nowrap{white-space:nowrap}.rounded{border-radius:.25rem}.rounded-2xl{border-radius:1rem}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:.5rem}.rounded-sm{border-radius:.125rem}.rounded-xl{border-radius:.75rem}.border{border-width:1px}.border-b{border-bottom-width:1px}.border-l-2{border-left-width:2px}.border-t{border-top-width:1px}.border-t-2{border-top-width:2px}.border-hg-green\/25{border-color:rgba(0,252,101,.25)}.border-hg-green\/40{border-color:rgba(0,252,101,.4)}.border-white\/10{border-color:hsla(0,0%,100%,.1)}.border-white\/15{border-color:hsla(0,0%,100%,.15)}.border-l-negativo{--tw-border-opacity:1;border-left-color:rgb(255 77 77/var(--tw-border-opacity,1))}.border-l-neutro{--tw-border-opacity:1;border-left-color:rgb(154 154 154/var(--tw-border-opacity,1))}.border-l-white\/60{border-left-color:hsla(0,0%,100%,.6)}.border-t-negativo{--tw-border-opacity:1;border-top-color:rgb(255 77 77/var(--tw-border-opacity,1))}.border-t-white\/40{border-top-color:hsla(0,0%,100%,.4)}.bg-black\/40{background-color:rgba(0,0,0,.4)}.bg-black\/95{background-color:rgba(0,0,0,.95)}.bg-hg-green{--tw-bg-opacity:1;background-color:rgb(0 252 101/var(--tw-bg-opacity,1))}.bg-hg-green\/10{background-color:rgba(0,252,101,.1)}.bg-hg-green\/15{background-color:rgba(0,252,101,.15)}.bg-hg-green\/\[0\.05\]{background-color:rgba(0,252,101,.05)}.bg-hg-panel2{--tw-bg-opacity:1;background-color:rgb(30 30 30/var(--tw-bg-opacity,1))}.bg-negativo{--tw-bg-opacity:1;background-color:rgb(255 77 77/var(--tw-bg-opacity,1))}.bg-negativo\/10{background-color:rgba(255,77,77,.1)}.bg-negativo\/15{background-color:rgba(255,77,77,.15)}.bg-neutro{--tw-bg-opacity:1;background-color:rgb(154 154 154/var(--tw-bg-opacity,1))}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255/var(--tw-bg-opacity,1))}.bg-white\/10{background-color:hsla(0,0%,100%,.1)}.bg-white\/15{background-color:hsla(0,0%,100%,.15)}.bg-white\/40{background-color:hsla(0,0%,100%,.4)}.bg-white\/5{background-color:hsla(0,0%,100%,.05)}.bg-white\/\[0\.035\]{background-color:hsla(0,0%,100%,.035)}.bg-white\/\[0\.04\]{background-color:hsla(0,0%,100%,.04)}.bg-white\/\[0\.06\]{background-color:hsla(0,0%,100%,.06)}.p-2{padding:.5rem}.p-3\.5{padding:.875rem}.p-4{padding:1rem}.p-5{padding:1.25rem}.p-6{padding:1.5rem}.p-8{padding:2rem}.px-1{padding-left:.25rem;padding-right:.25rem}.px-2{padding-left:.5rem;padding-right:.5rem}.px-2\.5{padding-left:.625rem;padding-right:.625rem}.px-3{padding-left:.75rem;padding-right:.75rem}.px-4{padding-left:1rem;padding-right:1rem}.px-6{padding-left:1.5rem;padding-right:1.5rem}.px-8{padding-left:2rem;padding-right:2rem}.py-0\.5{padding-top:.125rem;padding-bottom:.125rem}.py-1{padding-top:.25rem;padding-bottom:.25rem}.py-1\.5{padding-top:.375rem;padding-bottom:.375rem}.py-2{padding-top:.5rem;padding-bottom:.5rem}.py-3\.5{padding-top:.875rem;padding-bottom:.875rem}.pr-1{padding-right:.25rem}.pt-2{padding-top:.5rem}.pt-4{padding-top:1rem}.text-left{text-align:left}.text-center{text-align:center}.text-right{text-align:right}.align-middle{vertical-align:middle}.text-2xl{font-size:1.5rem;line-height:2rem}.text-3xl{font-size:1.875rem;line-height:2.25rem}.text-4xl{font-size:2.25rem;line-height:2.5rem}.text-6xl{font-size:3.75rem;line-height:1}.text-\[10px\]{font-size:10px}.text-\[11px\]{font-size:11px}.text-\[9px\]{font-size:9px}.text-base{font-size:1rem;line-height:1.5rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:.75rem;line-height:1rem}.font-bold{font-weight:700}.font-extrabold{font-weight:800}.font-light{font-weight:300}.font-medium{font-weight:500}.font-semibold{font-weight:600}.uppercase{text-transform:uppercase}.italic{font-style:italic}.leading-\[1\.1\]{line-height:1.1}.leading-none{line-height:1}.leading-relaxed{line-height:1.625}.leading-tight{line-height:1.25}.tracking-\[0\.15em\]{letter-spacing:.15em}.tracking-\[0\.18em\]{letter-spacing:.18em}.tracking-\[0\.2em\]{letter-spacing:.2em}.tracking-tight{letter-spacing:-.025em}.tracking-wider{letter-spacing:.05em}.text-black{--tw-text-opacity:1;color:rgb(0 0 0/var(--tw-text-opacity,1))}.text-hg-green{--tw-text-opacity:1;color:rgb(0 252 101/var(--tw-text-opacity,1))}.text-hg-mut{--tw-text-opacity:1;color:rgb(154 154 154/var(--tw-text-opacity,1))}.text-hg-txt\/70{color:hsla(0,0%,91%,.7)}.text-hg-txt\/75{color:hsla(0,0%,91%,.75)}.text-hg-txt\/80{color:hsla(0,0%,91%,.8)}.text-hg-txt\/85{color:hsla(0,0%,91%,.85)}.text-negativo{--tw-text-opacity:1;color:rgb(255 77 77/var(--tw-text-opacity,1))}.text-neutro{--tw-text-opacity:1;color:rgb(154 154 154/var(--tw-text-opacity,1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255/var(--tw-text-opacity,1))}.filter{filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.backdrop-blur-md{--tw-backdrop-blur:blur(12px)}.backdrop-blur-md,.backdrop-blur-xl{-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.backdrop-blur-xl{--tw-backdrop-blur:blur(24px)}.transition{transition-property:color,background-color,border-color,text-decoration-color,fill,stroke,opacity,box-shadow,transform,filter,-webkit-backdrop-filter;transition-property:color,background-color,border-color,text-decoration-color,fill,stroke,opacity,box-shadow,transform,filter,backdrop-filter;transition-property:color,background-color,border-color,text-decoration-color,fill,stroke,opacity,box-shadow,transform,filter,backdrop-filter,-webkit-backdrop-filter;transition-timing-function:cubic-bezier(.4,0,.2,1);transition-duration:.15s}.transition-all{transition-property:all;transition-timing-function:cubic-bezier(.4,0,.2,1);transition-duration:.15s}.duration-300{transition-duration:.3s}.selection\:bg-hg-green ::-moz-selection{--tw-bg-opacity:1;background-color:rgb(0 252 101/var(--tw-bg-opacity,1))}.selection\:bg-hg-green ::selection{--tw-bg-opacity:1;background-color:rgb(0 252 101/var(--tw-bg-opacity,1))}.selection\:text-black ::-moz-selection{--tw-text-opacity:1;color:rgb(0 0 0/var(--tw-text-opacity,1))}.selection\:text-black ::selection{--tw-text-opacity:1;color:rgb(0 0 0/var(--tw-text-opacity,1))}.selection\:bg-hg-green::-moz-selection{--tw-bg-opacity:1;background-color:rgb(0 252 101/var(--tw-bg-opacity,1))}.selection\:bg-hg-green::selection{--tw-bg-opacity:1;background-color:rgb(0 252 101/var(--tw-bg-opacity,1))}.selection\:text-black::-moz-selection{--tw-text-opacity:1;color:rgb(0 0 0/var(--tw-text-opacity,1))}.selection\:text-black::selection{--tw-text-opacity:1;color:rgb(0 0 0/var(--tw-text-opacity,1))}.hover\:border-white\/30:hover{border-color:hsla(0,0%,100%,.3)}.hover\:bg-white:hover{--tw-bg-opacity:1;background-color:rgb(255 255 255/var(--tw-bg-opacity,1))}.hover\:bg-white\/10:hover{background-color:hsla(0,0%,100%,.1)}.hover\:bg-white\/\[0\.04\]:hover{background-color:hsla(0,0%,100%,.04)}.hover\:text-white:hover{--tw-text-opacity:1;color:rgb(255 255 255/var(--tw-text-opacity,1))}@media (min-width:640px){.sm\:mx-4{margin-left:1rem;margin-right:1rem}}@media (min-width:768px){.md\:inline{display:inline}.md\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}.md\:grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}.md\:grid-cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}.md\:p-8{padding:2rem}.md\:text-3xl{font-size:1.875rem;line-height:2.25rem}.md\:text-4xl{font-size:2.25rem;line-height:2.5rem}.md\:text-5xl{font-size:3rem;line-height:1}.md\:text-6xl{font-size:3.75rem;line-height:1}.md\:text-lg{font-size:1.125rem;line-height:1.75rem}}@media (min-width:1024px){.lg\:col-span-4{grid-column:span 4/span 4}.lg\:col-span-5{grid-column:span 5/span 5}.lg\:col-span-7{grid-column:span 7/span 7}.lg\:col-span-8{grid-column:span 8/span 8}.lg\:flex{display:flex}.lg\:grid-cols-12{grid-template-columns:repeat(12,minmax(0,1fr))}.lg\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}.lg\:grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}.lg\:grid-cols-5{grid-template-columns:repeat(5,minmax(0,1fr))}.lg\:grid-cols-6{grid-template-columns:repeat(6,minmax(0,1fr))}.lg\:text-7xl{font-size:4.5rem;line-height:1}}</style>
     <style>
         :root {
             --hg-green: #00FC65;
@@ -103,6 +76,51 @@
             height: 2px;
             background: var(--hg-green);
         }
+        /* ============ MOBILE FIRST ============
+           En celular la diapositiva deja de ser una caja fija y pasa a scrollear:
+           así nunca se corta el contenido, que era el problema al abrirlo desde el teléfono. */
+        html { -webkit-text-size-adjust: 100%; }
+        body { min-height: 100vh; min-height: 100dvh; overflow-x: hidden; }
+
+        .scroll-hint { display: none; }
+
+        @media (max-width: 767px) {
+            body { height: 100vh; height: 100dvh; }
+            header.no-print { height: 3.4rem; padding-left: .8rem; padding-right: .8rem; }
+            footer.no-print {
+                height: auto; padding: .55rem .8rem;
+                padding-bottom: calc(.55rem + env(safe-area-inset-bottom));
+            }
+            .hide-mobile { display: none !important; }
+
+            main {
+                overflow-y: auto !important;
+                -webkit-overflow-scrolling: touch;
+                overscroll-behavior-y: contain;
+                align-items: flex-start !important;
+                padding: 1rem .85rem 2rem !important;
+            }
+            .slide {
+                height: auto !important;
+                min-height: 100%;
+                justify-content: flex-start !important;
+                padding: 0 !important;
+            }
+            .slide .custom-scrollbar {
+                max-height: none !important;
+                overflow-y: visible !important;
+            }
+            .cloud { gap: 2px 9px; }
+            .dumb { height: 84px; }
+            .dumb-lab { width: 118px; }
+            header.no-print button, footer.no-print button { min-height: 40px; min-width: 40px; }
+            .scroll-hint { display: block; }
+        }
+
+        @media (max-width: 400px) {
+            .hbar-row { grid-template-columns: 96px 1fr 64px; gap: 8px; }
+        }
+
         /* --- Gráficos de barras nativos (sin librerías) --- */
         .hbar-row { display: grid; grid-template-columns: 190px 1fr 84px; align-items: center; gap: 14px; }
         @media (max-width: 900px) {
@@ -177,11 +195,11 @@
             <div class="w-8 h-8 octagon" style="background: var(--hg-green);"></div>
             <div>
                 <h1 class="display text-sm text-white tracking-tight uppercase">Hegemón</h1>
-                <p class="text-[11px] text-hg-mut">Unidad de Inteligencia Digital &amp; Social Listening</p>
+                <p class="text-[11px] text-hg-mut hide-mobile">Unidad de Inteligencia Digital &amp; Social Listening</p>
             </div>
         </div>
 
-        <div class="flex items-center space-x-3 text-xs font-medium text-hg-mut">
+        <div class="flex items-center space-x-3 text-xs font-medium text-hg-mut hide-mobile">
             <span class="border border-white/15 bg-white/5 px-3 py-1 rounded-full text-hg-green font-bold flex items-center gap-1.5">
                 <span class="w-2 h-2 rounded-full bg-hg-green animate-pulse"></span>
                 7.08M Menciones
@@ -197,10 +215,10 @@
             <button id="btnOverview" title="Vista de Grilla (Tecla O)" class="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-hg-mut hover:text-white border border-white/10 transition">
                 <i data-lucide="grid" class="w-4 h-4"></i>
             </button>
-            <button id="btnFullscreen" title="Pantalla Completa (Tecla F)" class="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-hg-mut hover:text-white border border-white/10 transition">
+            <button id="btnFullscreen" title="Pantalla Completa (Tecla F)" class="hide-mobile p-2 rounded-lg bg-white/5 hover:bg-white/10 text-hg-mut hover:text-white border border-white/10 transition">
                 <i data-lucide="maximize" class="w-4 h-4"></i>
             </button>
-            <button id="btnPrint" onclick="window.print()" title="Imprimir / Guardar PDF" class="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-hg-mut hover:text-white border border-white/10 transition">
+            <button id="btnPrint" onclick="window.print()" title="Imprimir / Guardar PDF" class="hide-mobile p-2 rounded-lg bg-white/5 hover:bg-white/10 text-hg-mut hover:text-white border border-white/10 transition">
                 <i data-lucide="printer" class="w-4 h-4"></i>
             </button>
         </div>
@@ -313,8 +331,9 @@
                     <span class="text-[10px] text-hg-mut uppercase tracking-wider">Sep 2025 – Sep 2026</span>
                 </div>
                 <p class="text-[10px] text-hg-mut mb-2">Cuatro picos concentran la conversación; el resto del año se sostiene en una línea de base baja y estable</p>
-                <div class="overflow-x-auto">
-                    <div class="min-w-[640px]">
+                <p class="scroll-hint text-[10px] text-hg-mut mb-1">Deslizá el gráfico hacia el costado →</p>
+                <div class="overflow-x-auto custom-scrollbar">
+                    <div class="min-w-[560px]">
                         <svg viewBox="0 0 1200 232" class="w-full h-auto" role="img" aria-label="Volumen semanal de menciones entre septiembre de 2025 y septiembre de 2026, con cuatro picos">
                             <defs>
                             <linearGradient id="volGrad" x1="0" y1="0" x2="0" y2="1">
@@ -1828,8 +1847,9 @@
                 <div class="rule-green w-16 mt-3"></div>
             </div>
 
-            <div class="rounded-xl overflow-hidden overflow-x-auto border border-white/10">
-                <table class="w-full text-left border-collapse text-xs">
+            <p class="scroll-hint text-[10px] text-hg-mut mb-2">Deslizá la tabla hacia el costado para verla completa →</p>
+            <div class="rounded-xl overflow-hidden overflow-x-auto custom-scrollbar border border-white/10">
+                <table class="w-full min-w-[680px] text-left border-collapse text-xs">
                     <thead>
                         <tr class="bg-white/[0.06] text-white font-extrabold uppercase tracking-wider">
                             <th class="p-3.5">Encuadre Discursivo</th>
@@ -1978,38 +1998,108 @@
             </div>
         </section>
 
-        <!-- Slide 26: Conclusiones y Recomendaciones -->
+        <!-- Slide 26: Conclusión comparativa -->
         <section class="slide w-full h-full max-w-6xl mx-auto flex-col justify-center p-4">
-            <div class="mb-6">
-                <span class="text-[11px] font-bold text-hg-green uppercase tracking-[0.2em]">Cierre Estratégico</span>
-                <h2 class="display text-2xl md:text-3xl text-white uppercase mt-2">Conclusiones y Recomendaciones</h2>
+            <div class="mb-3">
+                <span class="text-[11px] font-bold text-hg-green uppercase tracking-[0.2em]">Cierre estratégico</span>
+                <h2 class="display text-2xl md:text-3xl text-white uppercase mt-2">Conclusión comparativa: dos conversaciones</h2>
                 <div class="rule-green w-16 mt-3"></div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="panel p-6 rounded-xl border-t-2" style="border-top-color: var(--hg-green);">
-                    <div class="w-9 h-9 octagon text-black font-extrabold flex items-center justify-center mb-4" style="background: var(--hg-green);">1</div>
-                    <h3 class="text-base font-extrabold text-white mb-2">Desvinculación Partidaria</h3>
-                    <p class="text-xs text-hg-txt/75 leading-relaxed">
-                        La Causa Malvinas conserva consenso total cuando se tracciona mediante deporte y cultura, pero sufre polarización cuando se asocia a disputas político-partidarias.
-                    </p>
+            <p class="text-xs text-hg-mut mb-4 max-w-4xl">
+                Qué pasa con Malvinas según quién active la conversación: la Selección en julio o la cadena nacional en septiembre.
+            </p>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 relative">
+                <div class="panel-strong p-6 rounded-xl">
+                    <div class="text-[10px] font-bold uppercase tracking-[0.15em] text-hg-green">Activada por la Selección · julio 2026</div>
+                    <div class="flex items-end justify-between gap-3 mt-2 mb-5">
+                        <h3 class="text-lg font-extrabold text-white">Consigna, orgullo y alcance</h3>
+                        <div class="text-right shrink-0">
+                            <div class="display text-2xl text-hg-green leading-none">+4.367%</div>
+                            <div class="text-[10px] text-hg-mut mt-1">2,10M menciones · máximo anual</div>
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex items-start gap-3">
+                            <span class="w-2.5 h-2.5 octagon shrink-0 mt-1.5" style="background:#00FC65"></span>
+                            <div class="min-w-0">
+                                <div class="text-[10px] font-bold uppercase tracking-wider text-hg-mut">Sentimiento</div>
+                                <div class="text-xs text-hg-txt/85 leading-relaxed mt-0.5">90% positivo en el encuadre deportivo-identitario</div>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="w-2.5 h-2.5 octagon shrink-0 mt-1.5" style="background:#00FC65"></span>
+                            <div class="min-w-0">
+                                <div class="text-[10px] font-bold uppercase tracking-wider text-hg-mut">Vocabulario</div>
+                                <div class="text-xs text-hg-txt/85 leading-relaxed mt-0.5">Consigna y cancha: <i>"Malvinas son argentinas"</i>, pibes, bandera, veteranos</div>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="w-2.5 h-2.5 octagon shrink-0 mt-1.5" style="background:#00FC65"></span>
+                            <div class="min-w-0">
+                                <div class="text-[10px] font-bold uppercase tracking-wider text-hg-mut">Quién habla</div>
+                                <div class="text-xs text-hg-txt/85 leading-relaxed mt-0.5">Hinchadas y públicos de 18 a 35 años, ajenos al debate político</div>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="w-2.5 h-2.5 octagon shrink-0 mt-1.5" style="background:#00FC65"></span>
+                            <div class="min-w-0">
+                                <div class="text-[10px] font-bold uppercase tracking-wider text-hg-mut">Amplificación</div>
+                                <div class="text-xs text-hg-txt/85 leading-relaxed mt-0.5">2,5 veces más reposts que la pieza geopolítica de mayor alcance</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="panel p-6 rounded-xl border-t-2" style="border-top-color: var(--hg-green);">
-                    <div class="w-9 h-9 octagon text-black font-extrabold flex items-center justify-center mb-4" style="background: var(--hg-green);">2</div>
-                    <h3 class="text-base font-extrabold text-white mb-2">Transparencia Normativa</h3>
-                    <p class="text-xs text-hg-txt/75 leading-relaxed">
-                        Ante la sensibilidad por recursos en el Atlántico Sur, se sugiere comunicación proactiva e institucional en materia de fiscalización offshore y soberanía energética.
-                    </p>
+                <div class="panel p-6 rounded-xl">
+                    <div class="text-[10px] font-bold uppercase tracking-[0.15em] text-negativo">Activada por la cadena nacional · septiembre 2026</div>
+                    <div class="flex items-end justify-between gap-3 mt-2 mb-5">
+                        <h3 class="text-lg font-extrabold text-white">Expediente, gestión y rechazo</h3>
+                        <div class="text-right shrink-0">
+                            <div class="display text-2xl text-negativo leading-none">+1.280%</div>
+                            <div class="text-[10px] text-hg-mut mt-1">0,68M menciones · menos de un tercio</div>
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex items-start gap-3">
+                            <span class="w-2.5 h-2.5 octagon shrink-0 mt-1.5" style="background:#ff4d4d"></span>
+                            <div class="min-w-0">
+                                <div class="text-[10px] font-bold uppercase tracking-wider text-hg-mut">Sentimiento</div>
+                                <div class="text-xs text-hg-txt/85 leading-relaxed mt-0.5">82% negativo en el encuadre político-económico</div>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="w-2.5 h-2.5 octagon shrink-0 mt-1.5" style="background:#ff4d4d"></span>
+                            <div class="min-w-0">
+                                <div class="text-[10px] font-bold uppercase tracking-wider text-hg-mut">Vocabulario</div>
+                                <div class="text-xs text-hg-txt/85 leading-relaxed mt-0.5">Expediente y gestión: Milei, decreto, RIGI, sanción, petróleo</div>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="w-2.5 h-2.5 octagon shrink-0 mt-1.5" style="background:#ff4d4d"></span>
+                            <div class="min-w-0">
+                                <div class="text-[10px] font-bold uppercase tracking-wider text-hg-mut">Quién habla</div>
+                                <div class="text-xs text-hg-txt/85 leading-relaxed mt-0.5">Militancia, periodistas, legisladores y analistas de defensa</div>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="w-2.5 h-2.5 octagon shrink-0 mt-1.5" style="background:#ff4d4d"></span>
+                            <div class="min-w-0">
+                                <div class="text-[10px] font-bold uppercase tracking-wider text-hg-mut">Amplificación</div>
+                                <div class="text-xs text-hg-txt/85 leading-relaxed mt-0.5">La misma escena leída en clave partidaria rinde 50 veces menos</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="panel p-6 rounded-xl border-t-2" style="border-top-color: var(--hg-green);">
-                    <div class="w-9 h-9 octagon text-black font-extrabold flex items-center justify-center mb-4" style="background: var(--hg-green);">3</div>
-                    <h3 class="text-base font-extrabold text-white mb-2">Auditoría de Algoritmos e IA</h3>
-                    <p class="text-xs text-hg-txt/75 leading-relaxed">
-                        Dada la masiva adopción de bots como @grok (6,57M de interacciones), resulta prioritario monitorear las fuentes históricas empleadas por la IA para evitar sesgos discursivos.
-                    </p>
-                </div>
+                <div class="hidden lg:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 octagon bg-hg-panel2 border border-white/10 items-center justify-center text-[10px] font-bold text-hg-mut z-10">VS</div>
+            </div>
+
+            <div class="panel-strong p-5 rounded-xl mt-4">
+                <p class="text-xs text-hg-txt/85 leading-relaxed">
+                    <b class="text-white">La Causa Malvinas no cambia de signo: cambia de emisor.</b> Traccionada desde el deporte y la cultura triplica el volumen y unifica; enunciada desde el anuncio político se reduce a un tercio y se invierte el tono. La recomendación operativa es entrar siempre por el registro identitario y reservar el institucional para lo estrictamente normativo.
+                </p>
             </div>
         </section>
 
@@ -2033,23 +2123,23 @@
 
     <!-- Barra inferior de navegación -->
     <footer class="no-print h-16 border-t border-white/10 bg-black/40 backdrop-blur-md px-6 flex items-center justify-between z-30 shrink-0">
-        <div class="flex items-center space-x-2 text-[11px] text-hg-mut font-medium uppercase tracking-wider">
-            <span>Diapositiva</span>
+        <div class="flex items-center space-x-2 text-[11px] text-hg-mut font-medium uppercase tracking-wider shrink-0">
+            <span class="hide-mobile">Diapositiva</span>
             <span id="currentSlideNum" class="text-hg-green font-extrabold">1</span>
             <span>de</span>
             <span id="totalSlidesNum" class="text-white">18</span>
         </div>
 
-        <div class="flex-1 max-w-xs mx-4 bg-white/10 h-1 rounded-full overflow-hidden">
+        <div class="flex-1 max-w-xs mx-3 sm:mx-4 bg-white/10 h-1 rounded-full overflow-hidden">
             <div id="progressBar" class="h-full transition-all duration-300" style="width: 5.55%; background: var(--hg-green);"></div>
         </div>
 
         <div class="flex items-center space-x-2">
             <button id="btnPrev" class="px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-white border border-white/10 transition flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider">
-                <i data-lucide="chevron-left" class="w-4 h-4"></i> Anterior
+                <i data-lucide="chevron-left" class="w-4 h-4"></i> <span class="hide-mobile">Anterior</span>
             </button>
             <button id="btnNext" class="px-3 py-2 rounded-lg bg-hg-green hover:bg-white text-black transition flex items-center gap-1 text-[11px] font-extrabold uppercase tracking-wider">
-                Siguiente <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                <span class="hide-mobile">Siguiente</span> <i data-lucide="chevron-right" class="w-4 h-4"></i>
             </button>
         </div>
     </footer>
