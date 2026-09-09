@@ -1,0 +1,2329 @@
+<!DOCTYPE html>
+<html lang="es" class="dark h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informe Causa Malvinas en la Conversación Digital — Hegemón</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        if (window.tailwind) tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        hg: {
+                            green: '#00FC65',
+                            green2: '#00d956',
+                            dark: '#0a0a0a',
+                            panel: '#161616',
+                            panel2: '#1e1e1e',
+                            line: '#2e2e2e',
+                            txt: '#e8e8e8',
+                            mut: '#9a9a9a'
+                        },
+                        negativo: '#ff4d4d',
+                        neutro: '#9a9a9a',
+                        positivo: '#00FC65'
+                    },
+                    fontFamily: {
+                        sans: ['Archivo', 'Helvetica Neue', 'Arial', 'sans-serif'],
+                        display: ['Archivo Black', 'Archivo', 'sans-serif'],
+                        round: ['Nunito', 'Archivo', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Archivo+Black&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+    <!-- Lucide Icons (con respaldo si falla el CDN) -->
+    <script src="https://unpkg.com/lucide@latest" onerror="this.dataset.failed=1"></script>
+    <script>
+        if (typeof lucide === 'undefined') {
+            document.write('<script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"><\/script>');
+        }
+    </script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --hg-green: #00FC65;
+        }
+        body {
+            font-family: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+            color: #e8e8e8;
+            background: #000;
+        }
+        /* Fondo con degradado gris→negro, igual al prototipo */
+        .hg-bg {
+            background:
+                radial-gradient(120% 90% at 50% -20%, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0) 55%),
+                linear-gradient(180deg, #454545 0%, #3a3a3a 12%, #2b2b2b 30%, #1a1a1a 52%, #0a0a0a 72%, #000000 100%);
+        }
+        .display {
+            font-family: 'Archivo Black', 'Archivo', sans-serif;
+            letter-spacing: -0.02em;
+        }
+        .round-title {
+            font-family: 'Nunito', 'Archivo', sans-serif;
+            font-weight: 900;
+            letter-spacing: -0.01em;
+        }
+        .slide {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.35s ease-in-out, transform 0.35s ease-in-out;
+            transform: translateY(8px);
+        }
+        .slide.active {
+            display: flex;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        /* Paneles planos, sin vidrio de color */
+        .panel {
+            background: rgba(255, 255, 255, 0.035);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+        }
+        .panel-strong {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+        .panel:hover, .panel-strong:hover {
+            border-color: rgba(0, 252, 101, 0.35);
+        }
+        /* Marca octogonal Hegemón */
+        .octagon {
+            clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+        }
+        .rule-green {
+            height: 2px;
+            background: var(--hg-green);
+        }
+        /* --- Gráficos de barras nativos (sin librerías) --- */
+        .hbar-row { display: grid; grid-template-columns: 190px 1fr 84px; align-items: center; gap: 14px; }
+        @media (max-width: 900px) {
+            .hbar-row { grid-template-columns: 112px 1fr 72px; gap: 10px; }
+        }
+        .hbar-track {
+            position: relative; height: 20px; border-radius: 3px;
+            background: rgba(255, 255, 255, 0.07);
+        }
+        .hbar-fill {
+            position: absolute; left: 0; top: 0; bottom: 0;
+            border-radius: 0 4px 4px 0;   /* extremo redondeado, cuadrado en la línea base */
+            width: 0; transition: width 700ms cubic-bezier(.22,.61,.36,1);
+        }
+        .hbar-row:hover .hbar-track { background: rgba(255, 255, 255, 0.12); }
+        /* Barra apilada 100% con separación de 2px en color de superficie */
+        .meter { display: flex; height: 22px; border-radius: 3px; overflow: hidden; gap: 2px; background: transparent; }
+        .meter > span { display: block; height: 100%; }
+        /* Dumbbell: comparación de dos puntos en una misma escala */
+        .dumb { position: relative; height: 92px; margin: 8px 4px 0; }
+        .dumb-axis { position: absolute; left: 0; right: 0; top: 58px; height: 1px; background: rgba(255,255,255,0.12); }
+        .dumb-seg { position: absolute; top: 57px; height: 3px; border-radius: 2px;
+                    background: linear-gradient(90deg, #8a8a8a 0%, #00FC65 100%); }
+        .dumb-dot { position: absolute; top: 51px; width: 15px; height: 15px; border-radius: 50%;
+                    box-shadow: 0 0 0 3px #141414; transform: translateX(-50%); }
+        .dumb-lab { position: absolute; transform: translateX(-50%); text-align: center; width: 150px; top: 6px; }
+        /* Small multiples: cada panel con su propia escala */
+        .sm-panel { border: 1px solid rgba(255,255,255,0.09); background: rgba(255,255,255,0.035); border-radius: 12px; padding: 18px; }
+        .sm-row { display: grid; grid-template-columns: 1fr; gap: 5px; }
+        /* --- Nube de palabras --- */
+        .cloud { display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
+                 gap: 2px 13px; line-height: 1.1; text-align: center; }
+        .cloud span { transition: transform .16s ease, filter .16s ease; }
+        .cloud span:hover { transform: scale(1.07); filter: brightness(1.25); }
+        .w1 { font-size: clamp(26px, 3.4vw, 46px); font-weight: 900; letter-spacing: -0.02em; }
+        .w2 { font-size: clamp(20px, 2.4vw, 32px); font-weight: 800; letter-spacing: -0.01em; }
+        .w3 { font-size: clamp(15px, 1.6vw, 21px); font-weight: 700; }
+        .w4 { font-size: clamp(12px, 1.1vw, 15px); font-weight: 600; }
+        .w5 { font-size: 11px; font-weight: 500; }
+        .kw  { color: #f2f2f2; }
+        .kwd { color: #8a8a8a; }
+        .ph  { color: #00FC65; }
+        .chart-tip {
+            position: fixed; z-index: 60; pointer-events: none; opacity: 0;
+            transition: opacity 120ms ease;
+            background: #0d0d0d; border: 1px solid rgba(255,255,255,0.18);
+            border-radius: 6px; padding: 7px 10px; font-size: 11px; line-height: 1.35;
+            color: #f2f2f2; white-space: nowrap;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+        }
+        .chart-tip b { color: #fff; }
+        /* Modo presentación: respaldo cuando el navegador o el visor
+           bloquea la pantalla completa (por ejemplo dentro de un iframe) */
+        body.presentation-mode > header,
+        body.presentation-mode > footer { display: none !important; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255,255,255,0.04); }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,252,101,0.35); border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(0,252,101,0.7); }
+        @media print {
+            body { background: #000 !important; }
+            .no-print { display: none !important; }
+            .slide { display: flex !important; opacity: 1 !important; transform: none !important; page-break-after: always; height: 100vh !important; }
+        }
+    </style>
+</head>
+<body class="h-full overflow-hidden flex flex-col justify-between hg-bg selection:bg-hg-green selection:text-black">
+
+    <!-- Barra superior -->
+    <header class="no-print h-16 border-b border-white/10 bg-black/40 backdrop-blur-md px-6 flex items-center justify-between z-30 shrink-0">
+        <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 octagon" style="background: var(--hg-green);"></div>
+            <div>
+                <h1 class="display text-sm text-white tracking-tight uppercase">Hegemón</h1>
+                <p class="text-[11px] text-hg-mut">Unidad de Inteligencia Digital &amp; Social Listening</p>
+            </div>
+        </div>
+
+        <div class="flex items-center space-x-3 text-xs font-medium text-hg-mut">
+            <span class="border border-white/15 bg-white/5 px-3 py-1 rounded-full text-hg-green font-bold flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-hg-green animate-pulse"></span>
+                7.08M Menciones
+            </span>
+            <span class="hidden md:inline">Sep 2025 – Sep 2026</span>
+        </div>
+
+        <div class="flex items-center space-x-2">
+            <span class="hidden lg:flex items-center gap-3 mr-2 text-xs">
+                <span class="text-hg-mut">Hegemón</span>
+                <span class="font-bold text-white">2026</span>
+            </span>
+            <button id="btnOverview" title="Vista de Grilla (Tecla O)" class="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-hg-mut hover:text-white border border-white/10 transition">
+                <i data-lucide="grid" class="w-4 h-4"></i>
+            </button>
+            <button id="btnFullscreen" title="Pantalla Completa (Tecla F)" class="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-hg-mut hover:text-white border border-white/10 transition">
+                <i data-lucide="maximize" class="w-4 h-4"></i>
+            </button>
+            <button id="btnPrint" onclick="window.print()" title="Imprimir / Guardar PDF" class="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-hg-mut hover:text-white border border-white/10 transition">
+                <i data-lucide="printer" class="w-4 h-4"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Contenedor principal -->
+    <main class="relative flex-1 overflow-hidden p-4 md:p-8 flex items-center justify-center">
+
+        <!-- Slide 1: Portada -->
+        <section class="slide active w-full h-full max-w-6xl mx-auto flex-col justify-center items-center text-center p-6">
+            <div class="flex items-center gap-4 mb-8">
+                <div class="w-12 h-12 octagon" style="background: var(--hg-green);"></div>
+                <span class="display text-3xl md:text-4xl text-white uppercase">Hegemón</span>
+            </div>
+
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-hg-green/40 text-hg-green text-[11px] font-bold tracking-[0.18em] uppercase mb-6">
+                Reporte Anual Ejecutivo
+            </div>
+
+            <h1 class="display text-3xl md:text-5xl text-white uppercase max-w-4xl leading-[1.1]">
+                Informe Integral: <span class="text-hg-green">Causa Malvinas</span><br class="hidden md:inline"> en la Conversación Digital
+            </h1>
+            <div class="rule-green w-24 my-7"></div>
+            <p class="text-hg-txt/80 text-base md:text-lg max-w-2xl font-light">
+                Análisis cuantitativo y cualitativo de la opinión pública global y nacional
+                <span class="block text-hg-mut text-sm mt-1">(Septiembre 2025 – Septiembre 2026)</span>
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-10 w-full max-w-3xl">
+                <div class="panel p-5 rounded-xl text-center">
+                    <div class="display text-3xl text-hg-green">7.08M</div>
+                    <div class="text-[11px] uppercase tracking-wider text-hg-mut mt-1">Menciones Monitoreadas</div>
+                </div>
+                <div class="panel p-5 rounded-xl text-center">
+                    <div class="display text-3xl text-white">893K</div>
+                    <div class="text-[11px] uppercase tracking-wider text-hg-mut mt-1">Autores Únicos</div>
+                </div>
+                <div class="panel p-5 rounded-xl text-center">
+                    <div class="display text-3xl text-white">6.57M</div>
+                    <div class="text-[11px] uppercase tracking-wider text-hg-mut mt-1">Interacciones con IA (@grok)</div>
+                </div>
+            </div>
+
+            <button id="btnStart" class="mt-10 px-8 py-3.5 rounded-lg bg-hg-green hover:bg-white text-black font-extrabold text-sm uppercase tracking-wider flex items-center gap-2 transition">
+                Iniciar Presentación <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </button>
+        </section>
+
+        <!-- Slide 2: Resumen Ejecutivo -->
+        <section class="slide w-full h-full max-w-6xl mx-auto flex-col justify-center p-4">
+            <div class="mb-6">
+                <span class="text-[11px] font-bold text-hg-green uppercase tracking-[0.2em]">Diagnóstico Global</span>
+                <h2 class="display text-2xl md:text-3xl text-white uppercase mt-2">Resumen Ejecutivo y Ecosistema Digital</h2>
+                <div class="rule-green w-16 mt-3"></div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="panel p-6 rounded-xl flex flex-col justify-between">
+                    <div>
+                        <div class="w-11 h-11 octagon flex items-center justify-center text-black mb-4" style="background: var(--hg-green);">
+                            <i data-lucide="flag" class="w-5 h-5"></i>
+                        </div>
+                        <h3 class="text-lg font-extrabold text-white mb-2">Reivindicación Soberana Transversal</h3>
+                        <p class="text-sm text-hg-txt/75 leading-relaxed">
+                            La Causa Malvinas se mantiene como el núcleo de consenso identitario más sólido del país, superando ampliamente las grietas partidarias tradicionales.
+                        </p>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-white/10 text-[11px] uppercase tracking-wider text-hg-green font-bold">Consenso Patriótico Absoluto</div>
+                </div>
+
+                <div class="panel p-6 rounded-xl flex flex-col justify-between">
+                    <div>
+                        <div class="w-11 h-11 octagon flex items-center justify-center text-black mb-4" style="background: var(--hg-green);">
+                            <i data-lucide="trophy" class="w-5 h-5"></i>
+                        </div>
+                        <h3 class="text-lg font-extrabold text-white mb-2">Catalizador Deportivo</h3>
+                        <p class="text-sm text-hg-txt/75 leading-relaxed">
+                            Las expresiones ligadas a la Selección Argentina de Fútbol y el deporte nacional generan el mayor nivel de tracción afectiva y alcance global orgánico.
+                        </p>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-white/10 text-[11px] uppercase tracking-wider text-hg-green font-bold">Máxima Viralidad Orgánica</div>
+                </div>
+
+                <div class="panel p-6 rounded-xl flex flex-col justify-between">
+                    <div>
+                        <div class="w-11 h-11 octagon flex items-center justify-center text-black mb-4" style="background: #ffffff;">
+                            <i data-lucide="zap" class="w-5 h-5"></i>
+                        </div>
+                        <h3 class="text-lg font-extrabold text-white mb-2">Tensión Recurso-Geopolítica</h3>
+                        <p class="text-sm text-hg-txt/75 leading-relaxed">
+                            Las temáticas económico-energéticas (Régimen RIGI, concesiones petroleras offshore) canalizan los mayores niveles de críticas e indignación ciudadana.
+                        </p>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-white/10 text-[11px] uppercase tracking-wider text-white font-bold">Picos de Alta Defensiva</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 3: Hallazgos Principales -->
+        <section class="slide w-full h-full max-w-6xl mx-auto flex-col justify-center p-4">
+            <div class="mb-4">
+                <span class="text-[11px] font-bold text-hg-green uppercase tracking-[0.2em]">Puntos Clave</span>
+                <h2 class="display text-2xl md:text-3xl text-white uppercase mt-2">Hallazgos Principales del Reporte Anual</h2>
+                <div class="rule-green w-16 mt-3"></div>
+            </div>
+
+            <!-- Curva de conversación -->
+            <div class="panel p-5 rounded-xl mb-4">
+                <div class="flex items-baseline justify-between gap-3 mb-1">
+                    <h3 class="text-sm font-extrabold text-white">Volumen de menciones por semana</h3>
+                    <span class="text-[10px] text-hg-mut uppercase tracking-wider">Sep 2025 – Sep 2026</span>
+                </div>
+                <p class="text-[10px] text-hg-mut mb-2">Cuatro picos concentran la conversación; el resto del año se sostiene en una línea de base baja y estable</p>
+                <div class="overflow-x-auto">
+                    <div class="min-w-[640px]">
+                        <svg viewBox="0 0 1200 232" class="w-full h-auto" role="img" aria-label="Volumen semanal de menciones entre septiembre de 2025 y septiembre de 2026, con cuatro picos">
+                            <defs>
+                            <linearGradient id="volGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#00FC65" stop-opacity="0.28"></stop>
+                            <stop offset="100%" stop-color="#00FC65" stop-opacity="0"></stop>
+                            </linearGradient>
+                            </defs>
+                            <line x1="62" y1="200.0" x2="1178" y2="200.0" stroke="rgba(255,255,255,0.08)" stroke-width="1"></line>
+                            <text x="52" y="203.5" text-anchor="end" fill="#8a8a8a" font-size="10">0</text>
+                            <line x1="62" y1="158.7" x2="1178" y2="158.7" stroke="rgba(255,255,255,0.08)" stroke-width="1"></line>
+                            <text x="52" y="162.2" text-anchor="end" fill="#8a8a8a" font-size="10">500k</text>
+                            <line x1="62" y1="117.4" x2="1178" y2="117.4" stroke="rgba(255,255,255,0.08)" stroke-width="1"></line>
+                            <text x="52" y="120.9" text-anchor="end" fill="#8a8a8a" font-size="10">1000k</text>
+                            <line x1="62" y1="76.1" x2="1178" y2="76.1" stroke="rgba(255,255,255,0.08)" stroke-width="1"></line>
+                            <text x="52" y="79.6" text-anchor="end" fill="#8a8a8a" font-size="10">1500k</text>
+                            <line x1="62" y1="34.8" x2="1178" y2="34.8" stroke="rgba(255,255,255,0.08)" stroke-width="1"></line>
+                            <text x="52" y="38.3" text-anchor="end" fill="#8a8a8a" font-size="10">2000k</text>
+                            <polygon points="62,200 62.0,196.9 82.7,197.5 103.3,196.3 124.0,194.9 144.7,196.7 165.3,196.9 186.0,197.1 206.7,197.5 227.3,197.7 248.0,197.4 268.7,197.5 289.3,197.7 310.0,197.2 330.7,195.5 351.3,192.2 372.0,195.0 392.7,195.5 413.3,195.9 434.0,196.0 454.7,196.7 475.3,196.3 496.0,196.5 516.7,196.7 537.3,196.9 558.0,197.1 578.7,196.3 599.3,195.5 620.0,194.6 640.7,193.8 661.3,193.4 682.0,193.0 702.7,150.4 723.3,190.1 744.0,192.6 764.7,182.2 785.3,192.6 806.0,194.2 826.7,195.0 847.3,195.5 868.0,195.9 888.7,196.0 909.3,196.3 930.0,195.9 950.7,195.0 971.3,192.6 992.0,174.4 1012.7,32.3 1033.3,136.4 1054.0,184.3 1074.7,186.8 1095.3,193.8 1116.0,191.7 1136.7,192.2 1157.3,148.0 1178.0,190.9 1178,200" fill="url(#volGrad)"></polygon>
+                            <polyline points="62.0,196.9 82.7,197.5 103.3,196.3 124.0,194.9 144.7,196.7 165.3,196.9 186.0,197.1 206.7,197.5 227.3,197.7 248.0,197.4 268.7,197.5 289.3,197.7 310.0,197.2 330.7,195.5 351.3,192.2 372.0,195.0 392.7,195.5 413.3,195.9 434.0,196.0 454.7,196.7 475.3,196.3 496.0,196.5 516.7,196.7 537.3,196.9 558.0,197.1 578.7,196.3 599.3,195.5 620.0,194.6 640.7,193.8 661.3,193.4 682.0,193.0 702.7,150.4 723.3,190.1 744.0,192.6 764.7,182.2 785.3,192.6 806.0,194.2 826.7,195.0 847.3,195.5 868.0,195.9 888.7,196.0 909.3,196.3 930.0,195.9 950.7,195.0 971.3,192.6 992.0,174.4 1012.7,32.3 1033.3,136.4 1054.0,184.3 1074.7,186.8 1095.3,193.8 1116.0,191.7 1136.7,192.2 1157.3,148.0 1178.0,190.9" fill="none" stroke="#00FC65" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"></polyline>
+                            <circle cx="702.7" cy="150.4" r="4.5" fill="#00FC65" stroke="#141414" stroke-width="2"></circle>
+                            <circle cx="764.7" cy="182.2" r="4.5" fill="#00FC65" stroke="#141414" stroke-width="2"></circle>
+                            <circle cx="1012.7" cy="32.3" r="4.5" fill="#00FC65" stroke="#141414" stroke-width="2"></circle>
+                            <circle cx="1157.3" cy="148.0" r="4.5" fill="#00FC65" stroke="#141414" stroke-width="2"></circle>
+                            <text x="702.7" y="128.4" text-anchor="middle" fill="#f2f2f2" font-size="13" font-weight="800">600.000</text>
+                            <text x="702.7" y="141.4" text-anchor="middle" fill="#8a8a8a" font-size="10">Pico C · 2 de Abril</text>
+                            <text x="764.7" y="160.2" text-anchor="middle" fill="#f2f2f2" font-size="13" font-weight="800">215.000</text>
+                            <text x="764.7" y="173.2" text-anchor="middle" fill="#8a8a8a" font-size="10">Pico D · alerta británica</text>
+                            <text x="1012.7" y="10.3" text-anchor="middle" fill="#f2f2f2" font-size="13" font-weight="800">2,03M</text>
+                            <text x="1012.7" y="23.3" text-anchor="middle" fill="#8a8a8a" font-size="10">Pico A · Selección</text>
+                            <text x="1163.3" y="126.0" text-anchor="end" fill="#f2f2f2" font-size="13" font-weight="800">630.000</text>
+                            <text x="1163.3" y="139.0" text-anchor="end" fill="#8a8a8a" font-size="10">Pico B · RIGI / cadena</text>
+                            <rect x="51.7" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Sep 25|38.000 menciones"></rect>
+                            <rect x="72.3" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Sep 25|30.000 menciones"></rect>
+                            <rect x="93.0" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Sep 25|45.000 menciones"></rect>
+                            <rect x="113.7" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Sep 25|62.000 menciones"></rect>
+                            <rect x="134.3" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Oct 25|40.000 menciones"></rect>
+                            <rect x="155.0" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Oct 25|38.000 menciones"></rect>
+                            <rect x="175.7" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Oct 25|35.000 menciones"></rect>
+                            <rect x="196.3" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Oct 25|30.000 menciones"></rect>
+                            <rect x="217.0" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Oct 25|28.000 menciones"></rect>
+                            <rect x="237.7" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Nov 25|32.000 menciones"></rect>
+                            <rect x="258.3" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Nov 25|30.000 menciones"></rect>
+                            <rect x="279.0" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Nov 25|28.000 menciones"></rect>
+                            <rect x="299.7" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Nov 25|34.000 menciones"></rect>
+                            <rect x="320.3" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Dic 25|55.000 menciones"></rect>
+                            <rect x="341.0" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Dic 25|95.000 menciones"></rect>
+                            <rect x="361.7" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Dic 25|60.000 menciones"></rect>
+                            <rect x="382.3" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Dic 25|55.000 menciones"></rect>
+                            <rect x="403.0" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Dic 25|50.000 menciones"></rect>
+                            <rect x="423.7" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Ene 26|48.000 menciones"></rect>
+                            <rect x="444.3" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Ene 26|40.000 menciones"></rect>
+                            <rect x="465.0" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Ene 26|45.000 menciones"></rect>
+                            <rect x="485.7" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Ene 26|42.000 menciones"></rect>
+                            <rect x="506.3" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Feb 26|40.000 menciones"></rect>
+                            <rect x="527.0" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Feb 26|38.000 menciones"></rect>
+                            <rect x="547.7" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Feb 26|35.000 menciones"></rect>
+                            <rect x="568.3" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Feb 26|45.000 menciones"></rect>
+                            <rect x="589.0" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Mar 26|55.000 menciones"></rect>
+                            <rect x="609.7" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Mar 26|65.000 menciones"></rect>
+                            <rect x="630.3" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Mar 26|75.000 menciones"></rect>
+                            <rect x="651.0" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Mar 26|80.000 menciones"></rect>
+                            <rect x="671.7" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Abr 26|85.000 menciones"></rect>
+                            <rect x="692.3" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Abr 26|600.000 menciones"></rect>
+                            <rect x="713.0" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Abr 26|120.000 menciones"></rect>
+                            <rect x="733.7" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Abr 26|90.000 menciones"></rect>
+                            <rect x="754.3" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Abr 26|215.000 menciones"></rect>
+                            <rect x="775.0" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de May 26|90.000 menciones"></rect>
+                            <rect x="795.7" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de May 26|70.000 menciones"></rect>
+                            <rect x="816.3" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de May 26|60.000 menciones"></rect>
+                            <rect x="837.0" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de May 26|55.000 menciones"></rect>
+                            <rect x="857.7" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Jun 26|50.000 menciones"></rect>
+                            <rect x="878.3" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Jun 26|48.000 menciones"></rect>
+                            <rect x="899.0" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Jun 26|45.000 menciones"></rect>
+                            <rect x="919.7" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Jun 26|50.000 menciones"></rect>
+                            <rect x="940.3" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Jul 26|60.000 menciones"></rect>
+                            <rect x="961.0" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Jul 26|90.000 menciones"></rect>
+                            <rect x="981.7" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Jul 26|310.000 menciones"></rect>
+                            <rect x="1002.3" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Jul 26|2,03M menciones"></rect>
+                            <rect x="1023.0" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Jul 26|770.000 menciones"></rect>
+                            <rect x="1043.7" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Ago 26|190.000 menciones"></rect>
+                            <rect x="1064.3" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Ago 26|160.000 menciones"></rect>
+                            <rect x="1085.0" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Ago 26|75.000 menciones"></rect>
+                            <rect x="1105.7" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Ago 26|100.000 menciones"></rect>
+                            <rect x="1126.3" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Sep 26|95.000 menciones"></rect>
+                            <rect x="1147.0" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Sep 26|630.000 menciones"></rect>
+                            <rect x="1167.7" y="10" width="20.7" height="190" fill="transparent" data-tip="Semana de Sep 26|110.000 menciones"></rect>
+                            <text x="62.0" y="218" text-anchor="middle" fill="#8a8a8a" font-size="10">Sep 25</text>
+                            <text x="144.7" y="218" text-anchor="middle" fill="#8a8a8a" font-size="10">Oct 25</text>
+                            <text x="248.0" y="218" text-anchor="middle" fill="#8a8a8a" font-size="10">Nov 25</text>
+                            <text x="330.7" y="218" text-anchor="middle" fill="#8a8a8a" font-size="10">Dic 25</text>
+                            <text x="434.0" y="218" text-anchor="middle" fill="#8a8a8a" font-size="10">Ene 26</text>
+                            <text x="516.7" y="218" text-anchor="middle" fill="#8a8a8a" font-size="10">Feb 26</text>
+                            <text x="599.3" y="218" text-anchor="middle" fill="#8a8a8a" font-size="10">Mar 26</text>
+                            <text x="682.0" y="218" text-anchor="middle" fill="#8a8a8a" font-size="10">Abr 26</text>
+                            <text x="785.3" y="218" text-anchor="middle" fill="#8a8a8a" font-size="10">May 26</text>
+                            <text x="868.0" y="218" text-anchor="middle" fill="#8a8a8a" font-size="10">Jun 26</text>
+                            <text x="950.7" y="218" text-anchor="middle" fill="#8a8a8a" font-size="10">Jul 26</text>
+                            <text x="1054.0" y="218" text-anchor="middle" fill="#8a8a8a" font-size="10">Ago 26</text>
+                            <text x="1136.7" y="218" text-anchor="middle" fill="#8a8a8a" font-size="10">Sep 26</text>
+                            </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="panel p-4 rounded-xl border-l-2" style="border-left-color: var(--hg-green);">
+                    <span class="text-[11px] font-bold text-hg-green uppercase tracking-wider">Pico A (Julio-Agosto)</span>
+                    <h3 class="text-base font-extrabold text-white mt-1 mb-2">Predominio Cultural y Deportivo</h3>
+                    <p class="text-xs text-hg-txt/75 leading-relaxed">
+                        El mayor volumen de conversación anual fue impulsado de forma orgánica por la Selección Argentina, la bandera <i>"Las Malvinas son Argentinas"</i> y la movilización popular.
+                    </p>
+                </div>
+
+                <div class="panel p-4 rounded-xl border-l-2 border-l-negativo">
+                    <span class="text-[11px] font-bold text-negativo uppercase tracking-wider">Pico B (Agosto-Sept)</span>
+                    <h3 class="text-base font-extrabold text-white mt-1 mb-2">Tensión Político-Económica</h3>
+                    <p class="text-xs text-hg-txt/75 leading-relaxed">
+                        El Régimen RIGI y el caso Harbour Energy/YPF provocaron el pico de negatividad más agudo del año, articulando denuncias sobre soberanía energética en el Atlántico Sur.
+                    </p>
+                </div>
+
+                <div class="panel p-4 rounded-xl border-l-2 border-l-white/60">
+                    <span class="text-[11px] font-bold text-white uppercase tracking-wider">Innovación Tecnológica</span>
+                    <h3 class="text-base font-extrabold text-white mt-1 mb-2">Adopción Masiva de IA</h3>
+                    <p class="text-xs text-hg-txt/75 leading-relaxed">
+                        Se registraron <b class="text-hg-green">6,57 millones de interacciones directas con @grok</b> en X, utilizándolo como auditor neutral y fuente de consulta normativa e histórica en tiempo real.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 4: Volumen Digital -->
+        <section class="slide w-full h-full max-w-6xl mx-auto flex-col justify-center p-4">
+            <div class="mb-6">
+                <span class="text-[11px] font-bold text-hg-green uppercase tracking-[0.2em]">Métricas Cuantitativas</span>
+                <h2 class="display text-2xl md:text-3xl text-white uppercase mt-2">Volumen Digital e Indicadores de Red</h2>
+                <div class="rule-green w-16 mt-3"></div>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                <div class="lg:col-span-5 panel-strong p-8 rounded-2xl text-center relative overflow-hidden">
+                    <span class="text-[11px] text-hg-mut uppercase tracking-[0.2em] font-bold">Volumen Total Analizado</span>
+                    <div class="display text-6xl lg:text-7xl text-hg-green my-4">7.08M</div>
+                    <p class="text-xs text-hg-mut">Menciones totales en X, Instagram, TikTok y entornos conversacionales de IA.</p>
+                </div>
+
+                <div class="lg:col-span-7 space-y-4">
+                    <div class="panel p-5 rounded-xl flex items-start gap-4">
+                        <div class="w-11 h-11 shrink-0 octagon flex items-center justify-center text-black" style="background: var(--hg-green);">
+                            <i data-lucide="users" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <h4 class="text-base font-extrabold text-white">893.000 Autores Únicos</h4>
+                                <span class="text-[10px] bg-hg-green/15 text-hg-green font-bold px-2 py-0.5 rounded uppercase tracking-wider">+8.384% vs previo</span>
+                            </div>
+                            <p class="text-xs text-hg-txt/70 mt-1">Expansión masiva de la base conversacional, saliendo del nicho militante hacia la ciudadanía activa.</p>
+                        </div>
+                    </div>
+
+                    <div class="panel p-5 rounded-xl flex items-start gap-4">
+                        <div class="w-11 h-11 shrink-0 octagon flex items-center justify-center text-black bg-white">
+                            <i data-lucide="bar-chart-2" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-base font-extrabold text-white">Promedio Diario: ~19.300 Menciones</h4>
+                            <p class="text-xs text-hg-txt/70 mt-1">Picos extraordinarios superiores a 2.000.000 en jornadas de alta viralidad deportiva o debate político.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 5: Expansión de la base conversacional -->
+        <section class="slide w-full h-full max-w-6xl mx-auto flex-col justify-center p-4">
+            <div class="mb-6">
+                <span class="text-[11px] font-bold text-hg-green uppercase tracking-[0.2em]">Base de Autores</span>
+                <h2 class="display text-2xl md:text-3xl text-white uppercase mt-2">Expansión de la Base Conversacional</h2>
+                <div class="rule-green w-16 mt-3"></div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+                <div class="lg:col-span-8 panel p-6 rounded-xl">
+                    <h3 class="text-sm font-extrabold text-white">Autores únicos: período previo frente al período analizado</h3>
+                    <p class="text-[11px] text-hg-mut mt-1">Misma escala para los dos extremos, para que se vea la distancia real</p>
+
+                    <div class="dumb">
+                        <div class="dumb-axis"></div>
+                        <div class="dumb-seg" style="left:3%; right:3%;"></div>
+
+                        <div class="dumb-lab" style="left:0; transform:none; text-align:left;">
+                            <div class="text-[10px] uppercase tracking-wider text-hg-mut">Período previo</div>
+                            <div class="display text-lg text-hg-txt/80 mt-0.5">≈10.500</div>
+                        </div>
+                        <div class="dumb-dot" data-tip="Período previo|≈10.500 autores únicos|valor reconstruido desde el +8.384%" style="left:3%; background:#8a8a8a;"></div>
+
+                        <div class="dumb-lab" style="left:auto; right:0; transform:none; text-align:right;">
+                            <div class="text-[10px] uppercase tracking-wider text-hg-mut">Sep 2025 – Sep 2026</div>
+                            <div class="display text-lg text-hg-green mt-0.5">893.000</div>
+                        </div>
+                        <div class="dumb-dot" data-tip="Período analizado|893.000 autores únicos|+8.384% respecto del período previo" style="left:97%; background:#00FC65;"></div>
+                    </div>
+
+                    <div class="flex items-center justify-center mt-2">
+                        <span class="text-[11px] text-hg-txt/80 border border-white/10 bg-white/5 rounded-full px-3 py-1">
+                            <b class="text-white">+8.384%</b> · unas <b class="text-white">85 veces</b> la base anterior
+                        </span>
+                    </div>
+
+                    <p class="text-[10px] text-hg-mut mt-5 pt-4 border-t border-white/10">
+                        El valor del período previo no figura en el relevamiento: se reconstruye desde el +8.384% declarado sobre los 893.000 autores actuales, por eso va como aproximado.
+                    </p>
+                </div>
+
+                <div class="lg:col-span-4 flex flex-col gap-4">
+                    <div class="panel p-5 rounded-xl">
+                        <div class="text-[11px] text-hg-mut uppercase tracking-[0.18em] font-bold">Menciones por autor</div>
+                        <div class="display text-3xl text-white mt-2">≈ 7,9</div>
+                        <div class="text-[11px] text-hg-mut mt-1">7,08M menciones sobre 893K autores únicos</div>
+                    </div>
+                    <div class="panel-strong p-5 rounded-xl flex-1 flex flex-col justify-center">
+                        <div class="flex items-center gap-2 text-hg-green font-extrabold text-xs uppercase tracking-wider mb-3">
+                            <i data-lucide="users-round" class="w-4 h-4"></i> Qué implica
+                        </div>
+                        <p class="text-xs text-hg-txt/80 leading-relaxed">
+                            El salto no es de intensidad sino de <b class="text-white">amplitud</b>: no habla más fuerte el mismo núcleo militante, entra a hablar gente nueva. Un promedio bajo de menciones por autor confirma participación ocasional y masiva, no militancia concentrada.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 6: Sentimiento Digital -->
+        <section data-chart="sentiment" class="slide w-full h-full max-w-6xl mx-auto flex-col justify-center p-4">
+            <div class="mb-4">
+                <span class="text-[11px] font-bold text-hg-green uppercase tracking-[0.2em]">Análisis Cualitativo</span>
+                <h2 class="display text-2xl md:text-3xl text-white uppercase mt-2">Distribución Global del Sentimiento</h2>
+                <div class="rule-green w-16 mt-3"></div>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                <div class="lg:col-span-5 panel p-6 rounded-xl flex flex-col items-center justify-center">
+                    <div class="w-64 h-64 relative">
+                        <canvas id="sentimentChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-7 space-y-3">
+                    <div class="p-4 rounded-lg bg-white/[0.04] border border-white/10 border-l-2 border-l-negativo flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-3">
+                            <span class="w-3 h-3 octagon bg-negativo"></span>
+                            <div>
+                                <span class="text-sm font-extrabold text-white">Negativo (48%)</span>
+                                <p class="text-xs text-hg-mut">3.400.000 menciones (RIGI, petroleras, concesiones)</p>
+                            </div>
+                        </div>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-negativo bg-negativo/10 px-2.5 py-1 rounded">Crítica / Indignación</span>
+                    </div>
+
+                    <div class="p-4 rounded-lg bg-white/[0.04] border border-white/10 border-l-2 border-l-neutro flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-3">
+                            <span class="w-3 h-3 octagon bg-neutro"></span>
+                            <div>
+                                <span class="text-sm font-extrabold text-white">Neutral (43%)</span>
+                                <p class="text-xs text-hg-mut">3.050.000 menciones (Noticias, consultas a IA, geopolítica)</p>
+                            </div>
+                        </div>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-neutro bg-white/5 px-2.5 py-1 rounded">Informativo</span>
+                    </div>
+
+                    <div class="p-4 rounded-lg bg-white/[0.04] border border-white/10 border-l-2 flex items-center justify-between gap-3" style="border-left-color: var(--hg-green);">
+                        <div class="flex items-center gap-3">
+                            <span class="w-3 h-3 octagon" style="background: var(--hg-green);"></span>
+                            <div>
+                                <span class="text-sm font-extrabold text-white">Positivo (9%)</span>
+                                <p class="text-xs text-hg-mut">630.000 menciones (Orgullo deportivo, Selección, héroes)</p>
+                            </div>
+                        </div>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-hg-green bg-hg-green/10 px-2.5 py-1 rounded">Identidad / Orgullo</span>
+                    </div>
+
+                    <div class="p-4 rounded-lg border border-hg-green/25 bg-hg-green/[0.05] text-xs text-hg-txt/85 leading-relaxed mt-2">
+                        <b class="text-hg-green">Desglose Metodológico:</b> El 48% de sentimiento "negativo" no denota desafección con la Causa Malvinas; por el contrario, refleja el rechazo y protesta ciudadana contra decisiones percibidas como concesiones a Gran Bretaña o empresas extranjeras.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 7: Top Reach Negativo y Neutral -->
+        <section class="slide w-full h-full max-w-6xl mx-auto flex-col justify-center p-4">
+            <div class="mb-4">
+                <span class="text-[11px] font-bold text-hg-green uppercase tracking-[0.2em]">Publicaciones de Mayor Alcance (Top Reach)</span>
+                <h2 class="display text-2xl md:text-3xl text-white uppercase mt-2">Ejes de Sentimiento Negativo y Neutral</h2>
+                <div class="rule-green w-16 mt-3"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 custom-scrollbar overflow-y-auto max-h-[64vh] pr-1">
+                <!-- Negativo 1 -->
+                <div class="panel p-4 rounded-xl border-l-2 border-l-negativo">
+                    <div class="flex items-center justify-between mb-2 gap-2">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 octagon bg-white/15 flex items-center justify-center font-extrabold text-[10px] text-white">IB</div>
+                            <div>
+                                <div class="text-xs font-extrabold text-white flex items-center gap-1">Itamar Ben Gvir <i data-lucide="check-circle-2" class="w-3 h-3 text-hg-green"></i></div>
+                                <div class="text-[10px] text-hg-mut">@itamarbengvir • X</div>
+                            </div>
+                        </div>
+                        <span class="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-negativo/15 text-negativo">Negativo / Geopolítico</span>
+                    </div>
+                    <p class="text-xs text-hg-txt/75 italic mb-3">
+                        "Es hora de que el Estado de Israel reconozca públicamente que las Islas Malvinas son territorio argentino ocupado... los británicos realizan allí perforaciones petroleras..."
+                    </p>
+                    <div class="flex items-center justify-between text-[11px] text-hg-mut pt-2 border-t border-white/10">
+                        <span class="text-hg-green font-bold">&gt;10,5 Millones impresiones</span>
+                        <span>4.622 reposts • 5.706 respuestas</span>
+                    </div>
+                </div>
+
+                <!-- Negativo 2 -->
+                <div class="panel p-4 rounded-xl border-l-2 border-l-negativo">
+                    <div class="flex items-center justify-between mb-2 gap-2">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 octagon bg-white/15 flex items-center justify-center font-extrabold text-[10px] text-white">JM</div>
+                            <div>
+                                <div class="text-xs font-extrabold text-white flex items-center gap-1">Javier Milei <i data-lucide="check-circle-2" class="w-3 h-3 text-hg-green"></i></div>
+                                <div class="text-[10px] text-hg-mut">@JMilei • X (24 Apr &amp; 1 Sep)</div>
+                            </div>
+                        </div>
+                        <span class="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-negativo/15 text-negativo">Polarización</span>
+                    </div>
+                    <p class="text-xs text-hg-txt/75 italic mb-3">
+                        Publicaciones sobre el reclamo soberano (24 Abr) y anuncio de cadena nacional (1 Sep), detonando un fuerte debate opositor en redes.
+                    </p>
+                    <div class="flex items-center justify-between text-[11px] text-hg-mut pt-2 border-t border-white/10">
+                        <span class="text-white font-semibold">Alto Engagement Política</span>
+                        <span>Tendencia en X</span>
+                    </div>
+                </div>
+
+                <!-- Neutral 1 -->
+                <div class="panel p-4 rounded-xl border-l-2 border-l-neutro">
+                    <div class="flex items-center justify-between mb-2 gap-2">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 octagon bg-white/15 flex items-center justify-center font-extrabold text-[9px] text-white">TYC</div>
+                            <div>
+                                <div class="text-xs font-extrabold text-white">TyC Sports</div>
+                                <div class="text-[10px] text-hg-mut">Instagram (21 Jul)</div>
+                            </div>
+                        </div>
+                        <span class="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-white/10 text-neutro">Neutral / Deportivo</span>
+                    </div>
+                    <p class="text-xs text-hg-txt/75 italic mb-3">
+                        Plantel del Club Tigre en Copa Sudamericana exhibiendo la bandera <i>"LAS MALVINAS SON ARGENTINAS"</i> ante la hinchada.
+                    </p>
+                    <div class="flex items-center justify-between text-[11px] text-hg-mut pt-2 border-t border-white/10">
+                        <span>Viral institucional</span>
+                        <span>Copa Sudamericana</span>
+                    </div>
+                </div>
+
+                <!-- Neutral 2 -->
+                <div class="panel p-4 rounded-xl border-l-2 border-l-neutro">
+                    <div class="flex items-center justify-between mb-2 gap-2">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 octagon bg-white/15 flex items-center justify-center font-extrabold text-[10px] text-white">NP</div>
+                            <div>
+                                <div class="text-xs font-extrabold text-white">Neo Pistea</div>
+                                <div class="text-[10px] text-hg-mut">Instagram (29 Apr)</div>
+                            </div>
+                        </div>
+                        <span class="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-white/10 text-neutro">Neutral / Cultural</span>
+                    </div>
+                    <p class="text-xs text-hg-txt/75 italic mb-3">
+                        Lanzamiento musical urbano (<i>"MEDUSA / Culto en Malvinas"</i>), demostrando la penetración de la temática en la juventud.
+                    </p>
+                    <div class="flex items-center justify-between text-[11px] text-hg-mut pt-2 border-t border-white/10">
+                        <span>Cultura Urbana</span>
+                        <span>Segmento Jóvenes</span>
+                    </div>
+                </div>
+
+                <div class="panel p-4 rounded-xl border-l-2 border-l-negativo">
+                    <div class="flex items-center justify-between mb-2 gap-2">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 octagon bg-white/15 flex items-center justify-center font-extrabold text-[10px] text-white">AR</div>
+                            <div>
+                                <div class="text-xs font-extrabold text-white flex items-center gap-1">Adrian Ravier <i data-lucide="check-circle-2" class="w-3 h-3 text-hg-green"></i></div>
+                                <div class="text-[10px] text-hg-mut">@AdrianRavier • X (17 Jul)</div>
+                            </div>
+                        </div>
+                        <span class="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-negativo/15 text-negativo">Crítica interna</span>
+                    </div>
+                    <p class="text-xs text-hg-txt/75 italic mb-3">
+                        "Siendo un país bananero, nunca vamos a recuperar las Malvinas... La única vía es la diplomática, y el respaldo internacional es clave."
+                    </p>
+                    <div class="flex items-center justify-between text-[11px] text-hg-mut pt-2 border-t border-white/10 gap-2">
+                        <span class="text-white font-semibold">Encuadre diplomático</span>
+                        <span class="text-right">Autocrítica al propio país</span>
+                    </div>
+                </div>
+
+                <div class="panel p-4 rounded-xl border-l-2 border-l-negativo">
+                    <div class="flex items-center justify-between mb-2 gap-2">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 octagon bg-white/15 flex items-center justify-center font-extrabold text-[10px] text-white">AW</div>
+                            <div>
+                                <div class="text-xs font-extrabold text-white flex items-center gap-1">Alejandro Wall <i data-lucide="check-circle-2" class="w-3 h-3 text-hg-green"></i></div>
+                                <div class="text-[10px] text-hg-mut">@alejwall • X (20 Jul)</div>
+                            </div>
+                        </div>
+                        <span class="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-negativo/15 text-negativo">Doble vara mediática</span>
+                    </div>
+                    <p class="text-xs text-hg-txt/75 italic mb-3">
+                        "¿Leyeron algún escándalo por el sopapo que Bellingham le pegó al Colo Barco? Ahí estaban entretenidos porque los jugadores mostraron una bandera que reivindica a las Islas Malvinas."
+                    </p>
+                    <div class="flex items-center justify-between text-[11px] text-hg-mut pt-2 border-t border-white/10 gap-2">
+                        <span class="text-white font-semibold">Periodismo deportivo</span>
+                        <span class="text-right">Crítica a la prensa extranjera</span>
+                    </div>
+                </div>
+
+                <div class="panel p-4 rounded-xl border-l-2 border-l-negativo">
+                    <div class="flex items-center justify-between mb-2 gap-2">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 octagon bg-white/15 flex items-center justify-center font-extrabold text-[10px] text-white">LB</div>
+                            <div>
+                                <div class="text-xs font-extrabold text-white flex items-center gap-1">Luciano Barroso <i data-lucide="check-circle-2" class="w-3 h-3 text-hg-green"></i></div>
+                                <div class="text-[10px] text-hg-mut">@luchobarrosook • X (27 Jul)</div>
+                            </div>
+                        </div>
+                        <span class="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-negativo/15 text-negativo">Denuncia territorial</span>
+                    </div>
+                    <p class="text-xs text-hg-txt/75 italic mb-3">
+                        "Es la base militar británica en nuestras Islas Malvinas. Está prohibido filmar, pero a mí ningún extranjero me va a decir qué se puede hacer en un territorio que es argentino."
+                    </p>
+                    <div class="flex items-center justify-between text-[11px] text-hg-mut pt-2 border-t border-white/10 gap-2">
+                        <span class="text-white font-semibold">Video en el terreno</span>
+                        <span class="text-right">Alta viralidad soberanista</span>
+                    </div>
+                </div>
+
+
+                <div class="panel p-4 rounded-xl border-l-2 border-l-negativo">
+                    <div class="flex items-center justify-between mb-2 gap-2">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 octagon bg-white/15 flex items-center justify-center font-extrabold text-[10px] text-white">SS</div>
+                            <div>
+                                <div class="text-xs font-extrabold text-white">sanataysarasa</div>
+                                <div class="text-[10px] text-hg-mut">@sanataysarasa • X (12 Jul)</div>
+                            </div>
+                        </div>
+                        <span class="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-negativo/15 text-negativo">Ironía / meme</span>
+                    </div>
+                    <p class="text-xs text-hg-txt/75 italic mb-3">
+                        "tuiteros: es un partido de fútbol nada más — haaland: por los pibes de malvinas que jamás olvidaré"
+                    </p>
+                    <div class="flex items-center justify-between text-[11px] text-hg-mut pt-2 border-t border-white/10 gap-2">
+                        <span class="text-white font-semibold">Chicana al debate</span>
+                        <span class="text-right">Frase top de la nube de términos</span>
+                    </div>
+                </div>
+
+                <div class="panel p-4 rounded-xl border-l-2 border-l-negativo">
+                    <div class="flex items-center justify-between mb-2 gap-2">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 octagon bg-white/15 flex items-center justify-center font-extrabold text-[10px] text-white">MS</div>
+                            <div>
+                                <div class="text-xs font-extrabold text-white">mattsalic</div>
+                                <div class="text-[10px] text-hg-mut">@mattsalic • X (15 Jul)</div>
+                            </div>
+                        </div>
+                        <span class="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-negativo/15 text-negativo">Crónica de cancha</span>
+                    </div>
+                    <p class="text-xs text-hg-txt/75 italic mb-3">
+                        "Tuvieron un gesto al final con la bandera de Las Malvinas son argentinas... No podíamos fallarle al pueblo argentino."
+                    </p>
+                    <div class="flex items-center justify-between text-[11px] text-hg-mut pt-2 border-t border-white/10 gap-2">
+                        <span class="text-white font-semibold">Reacción al gesto</span>
+                        <span class="text-right">Cita de jugadores</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 8: Top Reach Positivo -->
+        <section class="slide w-full h-full max-w-6xl mx-auto flex-col justify-center p-4">
+            <div class="mb-4">
+                <span class="text-[11px] font-bold text-hg-green uppercase tracking-[0.2em]">Publicaciones de Mayor Alcance (Top Reach)</span>
+                <h2 class="display text-2xl md:text-3xl text-white uppercase mt-2">Eje de Sentimiento Positivo</h2>
+                <div class="rule-green w-16 mt-3"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 custom-scrollbar overflow-y-auto max-h-[62vh] pr-1">
+                <!-- Positivo 1 -->
+                <div class="panel p-4 rounded-xl border-t-2 flex flex-col justify-between" style="border-top-color: var(--hg-green);">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="text-xs font-extrabold text-white">Gastón Edul</div>
+                            <span class="text-[10px] text-hg-mut">25 Jul • X</span>
+                        </div>
+                        <p class="text-xs text-hg-txt/75 italic mb-3">
+                            "Entrené sin dormir... Las Malvinas son Argentinas y los argentinos y sudamericanos tenemos más corazón que todos."
+                        </p>
+                    </div>
+                    <div class="pt-2 border-t border-white/10 text-[11px]">
+                        <div class="text-hg-green font-bold">5,52M Impresiones</div>
+                        <div class="text-hg-mut">11.580 reposts • 7.312 respuestas</div>
+                    </div>
+                </div>
+
+                <!-- Positivo 2 -->
+                <div class="panel p-4 rounded-xl border-t-2 flex flex-col justify-between" style="border-top-color: var(--hg-green);">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="text-xs font-extrabold text-white">Sudanalytics</div>
+                            <span class="text-[10px] text-hg-mut">15 Jul • X</span>
+                        </div>
+                        <p class="text-xs text-hg-txt/75 italic mb-3">
+                            Difusión masiva de imágenes de futbolistas con banderas e inscripciones patrióticas en festejos oficiales.
+                        </p>
+                    </div>
+                    <div class="pt-2 border-t border-white/10 text-[11px]">
+                        <div class="text-hg-green font-bold">Máxima Amplificación</div>
+                        <div class="text-hg-mut">Efecto Viral Deportivo</div>
+                    </div>
+                </div>
+
+                <!-- Positivo 3 -->
+                <div class="panel p-4 rounded-xl border-t-2 flex flex-col justify-between" style="border-top-color: var(--hg-green);">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="text-xs font-extrabold text-white">Omar De Felippe</div>
+                            <span class="text-[10px] text-hg-mut">15 Jul • X</span>
+                        </div>
+                        <p class="text-xs text-hg-txt/75 italic mb-3">
+                            "Como Veterano de Malvinas, hoy quiero agradecerles a estos chicos... ayuda a sanar emociones que siguen muy vivas."
+                        </p>
+                    </div>
+                    <div class="pt-2 border-t border-white/10 text-[11px]">
+                        <div class="text-hg-green font-bold">Resonancia Emotiva</div>
+                        <div class="text-hg-mut">Vínculo Histórico-Deportivo</div>
+                    </div>
+                </div>
+
+                <!-- Positivo 4 -->
+                <div class="panel p-4 rounded-xl border-t-2 flex flex-col justify-between" style="border-top-color: var(--hg-green);">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="text-xs font-extrabold text-white">Argentosdicen</div>
+                            <span class="text-[10px] text-hg-mut">23 Jul • Instagram</span>
+                        </div>
+                        <p class="text-xs text-hg-txt/75 italic mb-3">
+                            Celebración del cambio cartográfico en Google Maps reflejando explícitamente el nombre "Islas Malvinas".
+                        </p>
+                    </div>
+                    <div class="pt-2 border-t border-white/10 text-[11px]">
+                        <div class="text-hg-green font-bold">Orgullo Soberano Digital</div>
+                        <div class="text-hg-mut">Soberanía Cartográfica</div>
+                    </div>
+                </div>
+
+                <!-- Positivo 5 -->
+                <div class="panel p-4 rounded-xl border-t-2 flex flex-col justify-between" style="border-top-color: var(--hg-green);">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="text-xs font-extrabold text-white">Gabriel Alfie</div>
+                            <span class="text-[10px] text-hg-mut">20 Jul • X</span>
+                        </div>
+                        <p class="text-xs text-hg-txt/75 italic mb-3">
+                            Entrevista en Ezeiza: "No ganamos la cuarta estrella pero tenemos las Malvinas para nosotros."
+                        </p>
+                    </div>
+                    <div class="pt-2 border-t border-white/10 text-[11px]">
+                        <div class="text-hg-green font-bold">Simbolismo Popular</div>
+                        <div class="text-hg-mut">Mención Familiar Viral</div>
+                    </div>
+                </div>
+
+                <!-- Positivo 6 -->
+                <div class="panel p-4 rounded-xl border-t-2 flex flex-col justify-between" style="border-top-color: var(--hg-green);">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="text-xs font-extrabold text-white">Telefe Noticias</div>
+                            <span class="text-[10px] text-hg-mut">7 Jul • Instagram</span>
+                        </div>
+                        <p class="text-xs text-hg-txt/75 italic mb-3">
+                            Viralización de cánticos populares de cancha dedicados a los héroes de la Guerra de Malvinas.
+                        </p>
+                    </div>
+                    <div class="pt-2 border-t border-white/10 text-[11px]">
+                        <div class="text-hg-green font-bold">Cultura Popular</div>
+                        <div class="text-hg-mut">Homenaje a Caídos</div>
+                    </div>
+                </div>
+
+                </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 9: Efecto cascada de la bandera -->
+        <section class="slide w-full h-full max-w-6xl mx-auto flex-col justify-center p-4">
+            <div class="mb-3">
+                <span class="text-[11px] font-bold text-hg-green uppercase tracking-[0.2em]">Publicaciones de Mayor Alcance (Top Reach)</span>
+                <h2 class="display text-2xl md:text-3xl text-white uppercase mt-2">Efecto Cascada: la Bandera del 15 de Julio</h2>
+                <div class="rule-green w-16 mt-3"></div>
+            </div>
+
+            <p class="text-xs text-hg-mut mb-3 max-w-4xl">
+                Ordenadas de mayor a menor alcance. Cuatro de las cinco se publicaron en <b class="text-white">37 minutos</b> —la hora figura en cada tarjeta— y la restante reactiva la misma escena casi dos meses después.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-3 custom-scrollbar overflow-y-auto max-h-[56vh] pr-1">
+
+                <div class="panel p-4 rounded-xl border-t-2 flex flex-col justify-between" style="border-top-color: var(--hg-green);">
+                    <div>
+                        <div class="flex items-start justify-between gap-2 mb-2">
+                            <div class="flex items-start gap-2">
+                                <span class="display text-[11px] text-hg-green mt-0.5">01</span>
+                                <div>
+                                    <div class="text-xs font-extrabold text-white flex items-center gap-1">DAN <i data-lucide="check-circle-2" class="w-3 h-3 text-hg-green"></i></div>
+                                    <div class="text-[10px] text-hg-mut">@GordoDan_</div>
+                                </div>
+                            </div>
+                            <span class="text-[9px] text-hg-mut whitespace-nowrap">18:43 · 15 jul</span>
+                        </div>
+                        <span class="inline-block text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded mb-2 bg-hg-green/15 text-hg-green">Identitario / libertario</span>
+                        <p class="text-xs text-hg-txt/75 italic mb-3">"LAS MALVINAS SON ARGENTINAS"</p>
+                    </div>
+                    <div class="pt-2 border-t border-white/10 text-[11px]">
+                        <div class="text-hg-green font-bold">109,3 mil visualizaciones</div>
+                        <div class="text-hg-mut">≈1.000 reposts • ≈11.000 likes • 668 respuestas</div>
+                    </div>
+                </div>
+
+                <div class="panel p-4 rounded-xl border-t-2 flex flex-col justify-between" style="border-top-color: rgba(255,255,255,0.25);">
+                    <div>
+                        <div class="flex items-start justify-between gap-2 mb-2">
+                            <div class="flex items-start gap-2">
+                                <span class="display text-[11px] text-hg-mut mt-0.5">02</span>
+                                <div>
+                                    <div class="text-xs font-extrabold text-white flex items-center gap-1">Ramiro Marra <i data-lucide="check-circle-2" class="w-3 h-3 text-hg-green"></i></div>
+                                    <div class="text-[10px] text-hg-mut">@RAMIROMARRA</div>
+                                </div>
+                            </div>
+                            <span class="text-[9px] text-hg-mut whitespace-nowrap">22:06 · 3 sep</span>
+                        </div>
+                        <span class="inline-block text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded mb-2 bg-negativo/15 text-negativo">Reutilización política</span>
+                        <p class="text-xs text-hg-txt/75 italic mb-3">"Y pensar que todo comenzó acá. Perdimos la final, pero vamos a recuperar las Islas Malvinas."</p>
+                    </div>
+                    <div class="pt-2 border-t border-white/10 text-[11px]">
+                        <div class="text-hg-green font-bold">28,7 mil visualizaciones</div>
+                        <div class="text-hg-mut">184 reposts • ≈3.000 likes • 82 respuestas</div>
+                    </div>
+                </div>
+
+                <div class="panel p-4 rounded-xl border-t-2 flex flex-col justify-between" style="border-top-color: rgba(255,255,255,0.25);">
+                    <div>
+                        <div class="flex items-start justify-between gap-2 mb-2">
+                            <div class="flex items-start gap-2">
+                                <span class="display text-[11px] text-hg-mut mt-0.5">03</span>
+                                <div>
+                                    <div class="text-xs font-extrabold text-white flex items-center gap-1">Agustín Romo <i data-lucide="check-circle-2" class="w-3 h-3 text-hg-green"></i></div>
+                                    <div class="text-[10px] text-hg-mut">@agustinromm</div>
+                                </div>
+                            </div>
+                            <span class="text-[9px] text-hg-mut whitespace-nowrap">18:53 · 15 jul</span>
+                        </div>
+                        <span class="inline-block text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded mb-2 bg-hg-green/15 text-hg-green">Identitario / libertario</span>
+                        <p class="text-xs text-hg-txt/75 italic mb-3">"LAS MALVINAS SON ARGENTINAS"</p>
+                    </div>
+                    <div class="pt-2 border-t border-white/10 text-[11px]">
+                        <div class="text-hg-green font-bold">28,4 mil visualizaciones</div>
+                        <div class="text-hg-mut">543 reposts • ≈4.000 likes • 91 respuestas</div>
+                    </div>
+                </div>
+
+                <div class="panel p-4 rounded-xl border-t-2 flex flex-col justify-between" style="border-top-color: rgba(255,255,255,0.25);">
+                    <div>
+                        <div class="flex items-start justify-between gap-2 mb-2">
+                            <div class="flex items-start gap-2">
+                                <span class="display text-[11px] text-hg-mut mt-0.5">04</span>
+                                <div>
+                                    <div class="text-xs font-extrabold text-white flex items-center gap-1">Data Racing <i data-lucide="check-circle-2" class="w-3 h-3 text-hg-green"></i></div>
+                                    <div class="text-[10px] text-hg-mut">@DataRacingOK</div>
+                                </div>
+                            </div>
+                            <span class="text-[9px] text-hg-mut whitespace-nowrap">18:16 · 15 jul</span>
+                        </div>
+                        <span class="inline-block text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded mb-2 bg-white/10 text-hg-mut">Deportivo</span>
+                        <p class="text-xs text-hg-txt/75 italic mb-3">"Y nunca lo olviden: hoy y siempre las Malvinas son argentinas 🇦🇷"</p>
+                    </div>
+                    <div class="pt-2 border-t border-white/10 text-[11px]">
+                        <div class="text-hg-green font-bold">15,4 mil visualizaciones</div>
+                        <div class="text-hg-mut">235 reposts • 893 likes</div>
+                    </div>
+                </div>
+
+                <div class="panel p-4 rounded-xl border-t-2 flex flex-col justify-between" style="border-top-color: rgba(255,255,255,0.25);">
+                    <div>
+                        <div class="flex items-start justify-between gap-2 mb-2">
+                            <div class="flex items-start gap-2">
+                                <span class="display text-[11px] text-hg-mut mt-0.5">05</span>
+                                <div>
+                                    <div class="text-xs font-extrabold text-white flex items-center gap-1">Mariano Obarrio <i data-lucide="check-circle-2" class="w-3 h-3 text-hg-green"></i></div>
+                                    <div class="text-[10px] text-hg-mut">@marianoobarrio</div>
+                                </div>
+                            </div>
+                            <span class="text-[9px] text-hg-mut whitespace-nowrap">18:49 · 15 jul</span>
+                        </div>
+                        <span class="inline-block text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded mb-2 bg-negativo/15 text-negativo">Politización</span>
+                        <p class="text-xs text-hg-txt/75 italic mb-3">"La selección le respondió al gobierno. Las Malvinas son Argentinas"</p>
+                    </div>
+                    <div class="pt-2 border-t border-white/10 text-[11px]">
+                        <div class="text-hg-green font-bold">2.006 visualizaciones</div>
+                        <div class="text-hg-mut">51 reposts • 141 likes • 21 respuestas</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="panel-strong p-4 rounded-xl mt-3 flex items-start gap-3">
+                <i data-lucide="git-branch" class="w-5 h-5 text-hg-green shrink-0 mt-0.5"></i>
+                <p class="text-xs text-hg-txt/80 leading-relaxed">
+                    El alcance no sigue al orden de publicación: la cuenta deportiva abre la secuencia a las 18:16 pero el volumen se lo llevan las cuentas políticas que la replican después. La consigna sola rinde <b class="text-white">más de 50 veces</b> lo que la misma escena leída como disputa entre la selección y el gobierno. <b class="text-white">El material deportivo es el vehículo; el encuadre lo pone quien lo publica — y el encuadre partidario le cuesta alcance.</b>
+                </p>
+            </div>
+
+            <p class="text-[10px] text-hg-mut mt-2">Métrica: visualizaciones nativas de X, no comparable con las impresiones de Brandwatch usadas en el resto del informe.</p>
+        </section>
+
+        <!-- Slide 10: Alcance vs conversación -->
+        <section class="slide w-full h-full max-w-6xl mx-auto flex-col justify-center p-4">
+            <div class="mb-5">
+                <span class="text-[11px] font-bold text-hg-green uppercase tracking-[0.2em]">Calidad del Alcance</span>
+                <h2 class="display text-2xl md:text-3xl text-white uppercase mt-2">Alcance vs. Conversación</h2>
+                <div class="rule-green w-16 mt-3"></div>
+            </div>
+
+            <p class="text-xs text-hg-mut mb-4 max-w-3xl">
+                Las dos publicaciones con métricas completas del período, medidas en tres indicadores. Cada panel tiene su propia escala: son unidades distintas y no comparten eje.
+            </p>
+
+            <div class="flex flex-wrap gap-4 mb-4 text-[11px] text-hg-txt/80">
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm" style="background:#8a8a8a"></span>Itamar Ben Gvir · geopolítico</span>
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm" style="background:#00FC65"></span>Gastón Edul · deportivo</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="sm-panel">
+                    <div class="text-[11px] font-extrabold text-white uppercase tracking-wider">Impresiones</div>
+                    <div class="text-[10px] text-hg-mut mb-4">alcance bruto</div>
+                    <div class="sm-row">
+                        <div class="hbar-track" data-tip="Itamar Ben Gvir|Impresiones|más de 10,5 millones"><div class="hbar-fill" data-w="100%" style="width:100%; background:#8a8a8a;"></div></div>
+                        <div class="text-[11px] text-hg-txt/80 mb-2">10,5M</div>
+                        <div class="hbar-track" data-tip="Gastón Edul|Impresiones|5,52 millones"><div class="hbar-fill" data-w="52.6%" style="width:52.6%; background:#00FC65;"></div></div>
+                        <div class="text-[11px] text-white font-bold">5,52M</div>
+                    </div>
+                </div>
+
+                <div class="sm-panel">
+                    <div class="text-[11px] font-extrabold text-white uppercase tracking-wider">Reposts</div>
+                    <div class="text-[10px] text-hg-mut mb-4">decisión de amplificar</div>
+                    <div class="sm-row">
+                        <div class="hbar-track" data-tip="Itamar Ben Gvir|Reposts|4.622"><div class="hbar-fill" data-w="39.9%" style="width:39.9%; background:#8a8a8a;"></div></div>
+                        <div class="text-[11px] text-hg-txt/80 mb-2">4.622</div>
+                        <div class="hbar-track" data-tip="Gastón Edul|Reposts|11.580"><div class="hbar-fill" data-w="100%" style="width:100%; background:#00FC65;"></div></div>
+                        <div class="text-[11px] text-white font-bold">11.580</div>
+                    </div>
+                </div>
+
+                <div class="sm-panel">
+                    <div class="text-[11px] font-extrabold text-white uppercase tracking-wider">Respuestas</div>
+                    <div class="text-[10px] text-hg-mut mb-4">discusión generada</div>
+                    <div class="sm-row">
+                        <div class="hbar-track" data-tip="Itamar Ben Gvir|Respuestas|5.706"><div class="hbar-fill" data-w="78%" style="width:78%; background:#8a8a8a;"></div></div>
+                        <div class="text-[11px] text-hg-txt/80 mb-2">5.706</div>
+                        <div class="hbar-track" data-tip="Gastón Edul|Respuestas|7.312"><div class="hbar-fill" data-w="100%" style="width:100%; background:#00FC65;"></div></div>
+                        <div class="text-[11px] text-white font-bold">7.312</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-strong p-5 rounded-xl mt-5 flex items-start gap-3">
+                <i data-lucide="lightbulb" class="w-5 h-5 text-hg-green shrink-0 mt-0.5"></i>
+                <p class="text-xs text-hg-txt/80 leading-relaxed">
+                    Con casi la mitad de impresiones, el posteo deportivo genera <b class="text-white">2,5 veces más reposts</b> y más respuestas que el geopolítico: el alcance se compra, la amplificación se gana. Confirma en el nivel de la pieza individual lo que el volumen anual muestra en agregado.
+                </p>
+            </div>
+        </section>
+
+        <!-- Slide 11: Separador de Sección -->
+        <section class="slide w-full h-full max-w-6xl mx-auto flex-col justify-center items-center text-center p-6">
+            <div class="relative flex items-center justify-center">
+                <div class="octagon bg-white/[0.06] w-[520px] h-[300px] max-w-[80vw] absolute"></div>
+                <div class="relative z-10 px-8">
+                    <span class="inline-block px-4 py-1.5 rounded-full border border-hg-green/40 text-hg-green text-[11px] font-bold uppercase tracking-[0.2em] mb-4">
+                        Módulo II
+                    </span>
+                    <h2 class="display text-3xl md:text-5xl text-white uppercase leading-tight">
+                        Evolución Temporal<br>y Picos Conversacionales
+                    </h2>
+                </div>
+            </div>
+            <p class="text-hg-mut text-sm max-w-xl mt-8">
+                Cronología detallada de los hitos sociopolíticos y culturales que dinamizaron el volumen conversacional durante el ciclo anual.
+            </p>
+        </section>
+
+        <!-- Slide 12: Cronología de Picos -->
+        <section class="slide w-full h-full max-w-6xl mx-auto flex-col justify-center p-4">
+            <div class="mb-6">
+                <span class="text-[11px] font-bold text-hg-green uppercase tracking-[0.2em]">Línea de Tiempo</span>
+                <h2 class="display text-2xl md:text-3xl text-white uppercase mt-2">Cronología de los Cuatro Grandes Picos</h2>
+                <div class="rule-green w-16 mt-3"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 relative">
+                <div class="panel p-5 rounded-xl border-t-2 border-t-white/40">
+                    <span class="text-[10px] font-bold text-hg-mut uppercase tracking-wider">Pico C (Marzo-Abril)</span>
+                    <div class="display text-2xl text-white mt-1">+1.212%</div>
+                    <p class="text-xs text-hg-txt/70 mt-2">
+                        Conmemoración del 2 de Abril, homenajes patrios y tributo histórico a los caídos.
+                    </p>
+                </div>
+
+                <div class="panel p-5 rounded-xl border-t-2 border-t-white/40">
+                    <span class="text-[10px] font-bold text-hg-mut uppercase tracking-wider">Pico D (20 Abril)</span>
+                    <div class="display text-2xl text-white mt-1">+382%</div>
+                    <p class="text-xs text-hg-txt/70 mt-2">
+                        Alerta mediática por movimientos navales e hidrocarburíferos británicos bajo etiquetas #Urgente.
+                    </p>
+                </div>
+
+                <div class="panel-strong p-5 rounded-xl border-t-2" style="border-top-color: var(--hg-green);">
+                    <span class="text-[10px] font-bold text-hg-green uppercase tracking-wider">Pico A (Julio-Agosto)</span>
+                    <div class="display text-2xl text-hg-green mt-1">+4.367%</div>
+                    <div class="text-[9px] bg-hg-green text-black font-extrabold px-2 py-0.5 rounded w-fit my-1 uppercase tracking-wider">Máximo Anual</div>
+                    <p class="text-xs text-hg-txt/70">
+                        Selección Argentina, banderas virales en estadios y masiva movilización popular.
+                    </p>
+                </div>
+
+                <div class="panel p-5 rounded-xl border-t-2 border-t-negativo">
+                    <span class="text-[10px] font-bold text-negativo uppercase tracking-wider">Pico B (Agosto-Sept)</span>
+                    <div class="display text-2xl text-white mt-1">+1.280%</div>
+                    <p class="text-xs text-hg-txt/70 mt-2">
+                        Polémica RIGI, Harbour Energy / YPF y cuestionamientos al Caso Elsztain (FIC).
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 13: Volumen Comparativo de Picos -->
+        <section data-chart="peaks" class="slide w-full h-full max-w-6xl mx-auto flex-col justify-center p-4">
+            <div class="mb-4">
+                <span class="text-[11px] font-bold text-hg-green uppercase tracking-[0.2em]">Comparativa de Impacto</span>
+                <h2 class="display text-2xl md:text-3xl text-white uppercase mt-2">Volumen Comparativo de los Picos</h2>
+                <div class="rule-green w-16 mt-3"></div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                <div class="lg:col-span-7 panel p-6 rounded-xl">
+                    <div class="h-64 relative">
+                        <canvas id="peaksChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-5 panel-strong p-6 rounded-xl space-y-4">
+                    <div class="flex items-center gap-2 text-hg-green font-extrabold text-sm uppercase tracking-wider">
+                        <i data-lucide="lightbulb" class="w-5 h-5"></i> Insight Clave
+                    </div>
+                    <div class="rule-green w-10"></div>
+                    <p class="text-xs text-hg-txt/80 leading-relaxed">
+                        El <b class="text-white">Pico A (Selección &amp; Banderas)</b> superó los <b class="text-hg-green">2.100.000 menciones</b>, representando el fenómeno conversacional más masivo del año.
+                    </p>
+                    <p class="text-xs text-hg-txt/80 leading-relaxed">
+                        Demuestra que la simbología deportiva y de orgullo patriótico multiplica por más de <b class="text-white">3 veces</b> el alcance de cualquier debate político tradicional.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 14: Magnitud relativa de los picos -->
+        <section class="slide w-full h-full max-w-6xl mx-auto flex-col justify-center p-4">
+            <div class="mb-6">
+                <span class="text-[11px] font-bold text-hg-green uppercase tracking-[0.2em]">Intensidad de los Picos</span>
+                <h2 class="display text-2xl md:text-3xl text-white uppercase mt-2">Variación de Volumen y Ritmo Diario</h2>
+                <div class="rule-green w-16 mt-3"></div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+                <!-- Gráfico: variación % por pico (énfasis en Pico A) -->
+                <div class="lg:col-span-7 panel p-6 rounded-xl">
+                    <h3 class="text-sm font-extrabold text-white">Crecimiento del volumen respecto de la línea de base</h3>
+                    <p class="text-[11px] text-hg-mut mt-1 mb-5">Variación porcentual registrada en cada pico conversacional</p>
+
+                    <div class="space-y-3.5">
+                        <div class="hbar-row" data-tip="Pico A · Julio–Agosto|Selección Argentina y banderas|+4.367% de volumen">
+                            <div class="text-[11px] text-hg-txt/80 leading-tight">Pico A <span class="block text-[10px] text-hg-mut">Selección Argentina</span></div>
+                            <div class="hbar-track"><div class="hbar-fill" data-w="100%" style="width:100%; background:#00FC65;"></div></div>
+                            <div class="text-xs font-extrabold text-white text-right">+4.367%</div>
+                        </div>
+                        <div class="hbar-row" data-tip="Pico B · Agosto–Septiembre|RIGI · Harbour Energy / YPF|+1.280% de volumen">
+                            <div class="text-[11px] text-hg-txt/80 leading-tight">Pico B <span class="block text-[10px] text-hg-mut">RIGI / Harbour Energy</span></div>
+                            <div class="hbar-track"><div class="hbar-fill" data-w="29.3%" style="width:29.3%; background:#8a8a8a;"></div></div>
+                            <div class="text-xs font-bold text-hg-txt/80 text-right">+1.280%</div>
+                        </div>
+                        <div class="hbar-row" data-tip="Pico C · Marzo–Abril|Conmemoración del 2 de Abril|+1.212% de volumen">
+                            <div class="text-[11px] text-hg-txt/80 leading-tight">Pico C <span class="block text-[10px] text-hg-mut">2 de Abril</span></div>
+                            <div class="hbar-track"><div class="hbar-fill" data-w="27.8%" style="width:27.8%; background:#8a8a8a;"></div></div>
+                            <div class="text-xs font-bold text-hg-txt/80 text-right">+1.212%</div>
+                        </div>
+                        <div class="hbar-row" data-tip="Pico D · 20 de Abril|Alerta por movimientos británicos|+382% de volumen">
+                            <div class="text-[11px] text-hg-txt/80 leading-tight">Pico D <span class="block text-[10px] text-hg-mut">Alerta británica</span></div>
+                            <div class="hbar-track"><div class="hbar-fill" data-w="8.7%" style="width:8.7%; background:#8a8a8a;"></div></div>
+                            <div class="text-xs font-bold text-hg-txt/80 text-right">+382%</div>
+                        </div>
+                    </div>
+
+                    <p class="text-[11px] text-hg-mut mt-5 pt-4 border-t border-white/10">
+                        <span class="inline-block w-2.5 h-2.5 align-middle mr-1.5 rounded-sm" style="background:#00FC65"></span>
+                        Pico A triplica al segundo pico del año: el disparador deportivo, no el político, marca el techo de la conversación.
+                    </p>
+                </div>
+
+                <!-- Ritmo diario: la relación es de dos órdenes de magnitud, va como cifra y no como barra -->
+                <div class="lg:col-span-5 flex flex-col gap-4">
+                    <div class="panel p-6 rounded-xl">
+                        <div class="text-[11px] text-hg-mut uppercase tracking-[0.18em] font-bold">Promedio diario</div>
+                        <div class="display text-4xl text-white mt-2">19.300</div>
+                        <div class="text-[11px] text-hg-mut mt-1">menciones por día en el período completo</div>
+                    </div>
+                    <div class="panel-strong p-6 rounded-xl">
+                        <div class="text-[11px] text-hg-mut uppercase tracking-[0.18em] font-bold">Pico diario máximo</div>
+                        <div class="display text-4xl text-hg-green mt-2">2.000.000+</div>
+                        <div class="text-[11px] text-hg-mut mt-1">menciones en una sola jornada de alta viralidad</div>
+                        <div class="mt-4 pt-4 border-t border-white/10 text-[11px] text-hg-txt/80">
+                            Unas <b class="text-white">103 veces</b> el día promedio: la conversación no es constante, se dispara por eventos.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 15: Deep Dive Pico A -->
+        <section class="slide w-full h-full max-w-6xl mx-auto flex-col justify-center p-4">
+            <div class="mb-6">
+                <span class="text-[11px] font-bold text-hg-green uppercase tracking-[0.2em]">Análisis en Profundidad</span>
+                <h2 class="display text-2xl md:text-3xl text-white uppercase mt-2">Deep Dive Pico A: La Selección Argentina</h2>
+                <div class="rule-green w-16 mt-3"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="panel p-6 rounded-xl">
+                    <div class="text-hg-green font-extrabold text-sm uppercase tracking-wider mb-3">Catalizador Identitario</div>
+                    <p class="text-xs text-hg-txt/75 leading-relaxed">
+                        Durante julio y agosto, la participación del seleccionado en competencias internacionales detonó el mayor volumen de publicaciones registrado en X.
+                    </p>
+                </div>
+
+                <div class="panel p-6 rounded-xl">
+                    <div class="text-hg-green font-extrabold text-sm uppercase tracking-wider mb-3">Símbolos e Iniciativas</div>
+                    <p class="text-xs text-hg-txt/75 leading-relaxed">
+                        La irrupción de la bandera con la leyenda <i>"Las Malvinas son Argentinas"</i>, cantos masivos y declaraciones directas generaron orgullo nacional unánime.
+                    </p>
+                </div>
+
+                <div class="panel p-6 rounded-xl">
+                    <div class="text-hg-green font-extrabold text-sm uppercase tracking-wider mb-3">Demografía Juvenil</div>
+                    <p class="text-xs text-hg-txt/75 leading-relaxed">
+                        Logró la adhesión directa de audiencias de 18 a 30 años, habitualmente desvinculadas de noticias y debates político-institucionales.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 16: Nube de palabras — Pico A (Mundial / Selección) -->
+        <section class="slide w-full h-full max-w-6xl mx-auto flex-col justify-center p-4">
+            <div class="mb-4">
+                <span class="text-[11px] font-bold text-hg-green uppercase tracking-[0.2em]">Vocabulario del Pico A</span>
+                <h2 class="display text-2xl md:text-3xl text-white uppercase mt-2">Nube de Términos: Mundial y Selección</h2>
+                <div class="rule-green w-16 mt-3"></div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+                <div class="lg:col-span-8 panel p-6 rounded-xl flex flex-col">
+                    <div class="flex items-baseline justify-between gap-3 mb-4">
+                        <h3 class="text-sm font-extrabold text-white">Términos y frases más frecuentes</h3>
+                        <span class="text-[10px] text-hg-mut uppercase tracking-wider">12 – 15 jul 2026</span>
+                    </div>
+                    <div class="cloud custom-scrollbar overflow-y-auto max-h-[48vh] px-1">
+                        <span class="w1 ph">MALVINAS SON ARGENTINAS</span>
+                        <span class="w1 kw">ARGENTINAS</span>
+                        <span class="w2 kw">Argentina</span>
+                        <span class="w2 ph">MALVINAS POR EL DIEGO</span>
+                        <span class="w2 kw">Inglaterra</span>
+                        <span class="w2 kw">Diego</span>
+                        <span class="w2 kw">bandera</span>
+                        <span class="w3 ph">Islas Malvinas</span>
+                        <span class="w3 kw">partido</span>
+                        <span class="w3 kw">Islas</span>
+                        <span class="w3 kw">jugadores</span>
+                        <span class="w3 kw">pibes</span>
+                        <span class="w3 ph">DIEGO POR LA ÚLTIMA DE LEO</span>
+                        <span class="w3 kw">argentinos</span>
+                        <span class="w3 kw">selección</span>
+                        <span class="w3 kw">guerra</span>
+                        <span class="w3 ph">Selección Argentina</span>
+                        <span class="w3 kw">LEO</span>
+                        <span class="w3 kw">ingleses</span>
+                        <span class="w3 ph">MALVINAS ARGENTINAS</span>
+                        <span class="w3 kw">Milei</span>
+                        <span class="w3 kw">gobierno</span>
+                        <span class="w3 kw">fútbol</span>
+                        <span class="w3 kw">🇦🇷</span>
+                        <span class="w3 kw">❤️</span>
+                        <span class="w4 ph">guerra de Malvinas</span>
+                        <span class="w4 ph">partido de fútbol</span>
+                        <span class="w4 ph">Margaret Thatcher</span>
+                        <span class="w4 ph">pibes de malvinas que jamás olvidaré</span>
+                        <span class="w4 kw">Mundial</span>
+                        <span class="w4 kw">hinchas</span>
+                        <span class="w4 kw">banderas</span>
+                        <span class="w4 kw">veteranos</span>
+                        <span class="w4 kw">festejos</span>
+                        <span class="w4 kw">memoria</span>
+                        <span class="w4 kw">historia</span>
+                        <span class="w4 kw">cancha</span>
+                        <span class="w4 kw">patria</span>
+                        <span class="w4 kw">victoria</span>
+                        <span class="w4 kw">soberanía</span>
+                        <span class="w4 kw">FIFA</span>
+                        <span class="w4 kw">presidente</span>
+                        <span class="w4 kw">Thatcher</span>
+                        <span class="w4 kw">Margaret</span>
+                        <span class="w4 kw">Ministra</span>
+                        <span class="w4 kw">ganar</span>
+                        <span class="w4 kw">pueblo</span>
+                        <span class="w4 kw">España</span>
+                        <span class="w4 kw">Javier</span>
+                        <span class="w4 kw">país</span>
+                        <span class="w4 kw">mensaje</span>
+                        <span class="w4 kw">final</span>
+                        <span class="w4 kw">gente</span>
+                        <span class="w4 kw">miércoles</span>
+                        <span class="w4 kw">recordar</span>
+                        <span class="w4 kw">hijos</span>
+                        <span class="w4 kw">inglés</span>
+                        <span class="w4 kw">argentino</span>
+                        <span class="w4 kw">Mundo</span>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-4 text-[11px] text-hg-mut mt-5 pt-4 border-t border-white/10">
+                        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm" style="background:#00FC65"></span>Frases</span>
+                        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm" style="background:#f2f2f2"></span>Palabras</span>
+                        <span class="ml-auto">El tamaño representa la frecuencia relativa del término</span>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-4 panel-strong p-6 rounded-xl flex flex-col justify-center">
+                    <div class="flex items-center gap-2 text-hg-green font-extrabold text-sm uppercase tracking-wider">
+                        <i data-lucide="quote" class="w-5 h-5"></i> Qué dice el vocabulario
+                    </div>
+                    <div class="rule-green w-10 my-4"></div>
+                    <p class="text-xs text-hg-txt/80 leading-relaxed mb-3">
+                        Domina la <b class="text-white">consigna</b>, no el argumento: "Malvinas son argentinas" y "Malvinas por el Diego" encabezan por encima de cualquier término institucional.
+                    </p>
+                    <p class="text-xs text-hg-txt/80 leading-relaxed mb-3">
+                        Aparece un léxico de cancha —pibes, hinchas, bandera, festejos— cruzado con memoria de guerra: veteranos, Thatcher, Inglaterra.
+                    </p>
+                    <p class="text-xs text-hg-txt/80 leading-relaxed">
+                        La política queda al margen: "Milei" y "gobierno" figuran, pero muy por detrás de los símbolos deportivos.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 17: RIGI y Harbour Energy -->
+        <section class="slide w-full h-full max-w-6xl mx-auto flex-col justify-center p-4">
+            <div class="mb-4">
+                <span class="text-[11px] font-bold text-negativo uppercase tracking-[0.2em]">Eje Político-Económico</span>
+                <h2 class="display text-2xl md:text-3xl text-white uppercase mt-2">Régimen RIGI y Caso Harbour Energy / YPF</h2>
+                <div class="rule-green w-16 mt-3"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="panel p-6 rounded-xl border-l-2 border-l-negativo">
+                    <h3 class="text-lg font-extrabold text-white mb-3">Harbour Energy &amp; Consorcio YPF</h3>
+                    <ul class="space-y-3 text-xs text-hg-txt/75">
+                        <li class="flex items-start gap-2">
+                            <i data-lucide="alert-triangle" class="w-4 h-4 text-negativo shrink-0 mt-0.5"></i>
+                            <span><b class="text-white">Conflicto Normativo:</b> Denuncias por la inclusión en el RIGI del proyecto offshore participado por Harbour Energy (ex Premier Oil).</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i data-lucide="file-text" class="w-4 h-4 text-hg-mut shrink-0 mt-0.5"></i>
+                            <span><b class="text-white">Antecedente Res. 481/2013:</b> Firma previamente sancionada por explorar ilegalmente en la cuenca Malvinas sin aval argentino.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="panel p-6 rounded-xl border-l-2 border-l-negativo">
+                    <h3 class="text-lg font-extrabold text-white mb-3">Reacción Digital de la Comunidad</h3>
+                    <ul class="space-y-3 text-xs text-hg-txt/75">
+                        <li class="flex items-start gap-2">
+                            <i data-lucide="thumbs-down" class="w-4 h-4 text-negativo shrink-0 mt-0.5"></i>
+                            <span><b class="text-white">82% Reaccionario Negativo:</b> Términos predominantes: <i>"entrega de recursos"</i>, <i>"inconstitucional"</i> y <i>"violación a Ley Gaucho Rivero"</i>.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i data-lucide="trending-up" class="w-4 h-4 text-hg-green shrink-0 mt-0.5"></i>
+                            <span><b class="text-white">Tendencia Sostenida:</b> Hashtags #RIGI, #HarbourEnergy e #YPF mantuvieron trending topic por más de 72 horas continuas.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 18: Nube de Términos: Régimen RIGI -->
+        <section class="slide w-full h-full max-w-6xl mx-auto flex-col justify-center p-4">
+            <div class="mb-4">
+                <span class="text-[11px] font-bold text-hg-green uppercase tracking-[0.2em]">Vocabulario del RIGI</span>
+                <h2 class="display text-2xl md:text-3xl text-white uppercase mt-2">Nube de Términos: Régimen RIGI</h2>
+                <div class="rule-green w-16 mt-3"></div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+                <div class="lg:col-span-8 panel p-6 rounded-xl flex flex-col">
+                    <div class="flex items-baseline justify-between gap-3 mb-1">
+                        <h3 class="text-sm font-extrabold text-white">Términos y frases más frecuentes</h3>
+                        <span class="text-[10px] text-hg-mut uppercase tracking-wider">1 ene – 8 sep 2026</span>
+                    </div>
+                    <p class="text-[10px] text-hg-mut mb-4">Conversación sobre Malvinas cruzada con el debate económico-normativo del período</p>
+                    <div class="cloud custom-scrollbar overflow-y-auto max-h-[46vh] px-1">
+                        <span class="w1 kw">Argentina</span>
+                        <span class="w2 kw">Milei</span>
+                        <span class="w2 kw">nacional</span>
+                        <span class="w2 kw">soberanía</span>
+                        <span class="w2 kw">gobierno</span>
+                        <span class="w2 kw">proyecto</span>
+                        <span class="w2 kw">petróleo</span>
+                        <span class="w2 kw">empresas</span>
+                        <span class="w3 kw">Estado</span>
+                        <span class="w3 kw">Ley</span>
+                        <span class="w3 kw">Islas</span>
+                        <span class="w3 kw">oficial</span>
+                        <span class="w3 kw">empresa</span>
+                        <span class="w3 kw">país</span>
+                        <span class="w3 kw">argentino</span>
+                        <span class="w3 kw">millones</span>
+                        <span class="w3 kw">política</span>
+                        <span class="w3 kw">decreto</span>
+                        <span class="w3 kw">cadena</span>
+                        <span class="w3 kw">inhabilitada</span>
+                        <span class="w3 kw">declaró</span>
+                        <span class="w3 kw">Southern</span>
+                        <span class="w3 kw">Harbour</span>
+                        <span class="w3 kw">dólares</span>
+                        <span class="w3 kw">concesiones</span>
+                        <span class="w3 kw">Venezuela</span>
+                        <span class="w3 kw">Presupuesto</span>
+                        <span class="w3 kw">proyecto</span>
+                        <span class="w3 ph">Javier Milei</span>
+                        <span class="w4 kw">SANCIONADA</span>
+                        <span class="w4 kw">británica</span>
+                        <span class="w4 kw">Fuego</span>
+                        <span class="w4 kw">yacimiento</span>
+                        <span class="w4 kw">inversión</span>
+                        <span class="w4 kw">Bases</span>
+                        <span class="w4 kw">luz</span>
+                        <span class="w4 kw">ABRIÓ</span>
+                        <span class="w4 kw">Firmó</span>
+                        <span class="w4 kw">Aprobó</span>
+                        <span class="w4 kw">Reglamentó</span>
+                        <span class="w4 kw">convencional</span>
+                        <span class="w4 kw">operar</span>
+                        <span class="w4 kw">registros</span>
+                        <span class="w4 kw">laboral</span>
+                        <span class="w4 kw">USD</span>
+                        <span class="w4 kw">Fiscal</span>
+                        <span class="w4 kw">financiero</span>
+                        <span class="w4 kw">sistema</span>
+                        <span class="w4 kw">acuerdo</span>
+                        <span class="w4 kw">servicios</span>
+                        <span class="w4 kw">impuestos</span>
+                        <span class="w4 kw">Nación</span>
+                        <span class="w4 kw">FMI</span>
+                        <span class="w4 kw">PASO</span>
+                        <span class="w4 kw">BCRA</span>
+                        <span class="w4 kw">deuda</span>
+                        <span class="w4 kw">déficit</span>
+                        <span class="w4 kw">reforma</span>
+                        <span class="w4 kw">ingreso</span>
+                        <span class="w4 kw">Banco</span>
+                        <span class="w4 kw">volvió</span>
+                        <span class="w4 kw">histórico</span>
+                        <span class="w4 kw">Mundial</span>
+                        <span class="w4 kw">Papel</span>
+                        <span class="w4 kw">oficiales</span>
+                        <span class="w4 kw">militar</span>
+                        <span class="w4 kw">Río</span>
+                        <span class="w4 kw">EE UU</span>
+                        <span class="w4 kw">cero</span>
+                        <span class="w4 kw">Energy</span>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-4 text-[11px] text-hg-mut mt-5 pt-4 border-t border-white/10">
+                        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm" style="background:#00FC65"></span>Frases</span>
+                        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm" style="background:#f2f2f2"></span>Palabras</span>
+                        <span class="ml-auto">El tamaño representa la frecuencia relativa del término</span>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-4 panel-strong p-6 rounded-xl flex flex-col justify-center">
+                    <div class="flex items-center gap-2 text-hg-green font-extrabold text-sm uppercase tracking-wider">
+                        <i data-lucide="quote" class="w-5 h-5"></i> Qué dice el vocabulario
+                    </div>
+                    <div class="rule-green w-10 my-4"></div>
+                    <p class="text-xs text-hg-txt/80 leading-relaxed mb-3">Malvinas deja de nombrarse sola: entra al léxico de <b class="text-white">gestión económica</b> —presupuesto, deuda, déficit, decreto, reforma, concesiones—.</p>
+                    <p class="text-xs text-hg-txt/80 leading-relaxed mb-3">Los términos de soberanía conviven con los de negocio: petróleo, empresas, inversión, dólares, yacimiento.</p>
+                    <p class="text-xs text-hg-txt/80 leading-relaxed mb-3">El actor que ordena la conversación es el Ejecutivo: Milei, gobierno, Estado, Ley, oficial y decreto encabezan por encima de cualquier término identitario.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 19: Nube de Términos: Harbour Energy / YPF -->
+        <section class="slide w-full h-full max-w-6xl mx-auto flex-col justify-center p-4">
+            <div class="mb-4">
+                <span class="text-[11px] font-bold text-hg-green uppercase tracking-[0.2em]">Vocabulario del Caso</span>
+                <h2 class="display text-2xl md:text-3xl text-white uppercase mt-2">Nube de Términos: Harbour Energy / YPF</h2>
+                <div class="rule-green w-16 mt-3"></div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+                <div class="lg:col-span-8 panel p-6 rounded-xl flex flex-col">
+                    <div class="flex items-baseline justify-between gap-3 mb-1">
+                        <h3 class="text-sm font-extrabold text-white">Términos y frases más frecuentes</h3>
+                        <span class="text-[10px] text-hg-mut uppercase tracking-wider">1 ene – 8 sep 2026 · consulta "Harbour Energy"</span>
+                    </div>
+                    <p class="text-[10px] text-hg-mut mb-4">Subconjunto de la conversación filtrado por el caso de la petrolera británica</p>
+                    <div class="cloud custom-scrollbar overflow-y-auto max-h-[46vh] px-1">
+                        <span class="w1 kw">Argentina</span>
+                        <span class="w1 kw">proyecto</span>
+                        <span class="w2 kw">gobierno</span>
+                        <span class="w2 kw">RIGI</span>
+                        <span class="w2 kw">Southern</span>
+                        <span class="w2 kw">sanción</span>
+                        <span class="w2 kw">británica</span>
+                        <span class="w2 kw">empresa</span>
+                        <span class="w2 kw">Islas</span>
+                        <span class="w2 kw">petróleo</span>
+                        <span class="w2 ph">Harbour Energy declaró en Londres</span>
+                        <span class="w3 kw">nacional</span>
+                        <span class="w3 kw">VIGENTE</span>
+                        <span class="w3 kw">Milei</span>
+                        <span class="w3 kw">OPERAR</span>
+                        <span class="w3 kw">autorización</span>
+                        <span class="w3 kw">Plataforma</span>
+                        <span class="w3 kw">PETROLERA</span>
+                        <span class="w3 kw">ganancias</span>
+                        <span class="w3 kw">BOMBAZO</span>
+                        <span class="w3 kw">Caputo</span>
+                        <span class="w3 kw">SANCIONADA</span>
+                        <span class="w3 kw">Londres</span>
+                        <span class="w3 kw">explotar</span>
+                        <span class="w3 kw">inhabilitada</span>
+                        <span class="w3 kw">declaró</span>
+                        <span class="w3 kw">Ley</span>
+                        <span class="w3 kw">Luis</span>
+                        <span class="w3 kw">oficial</span>
+                        <span class="w3 kw">Premier</span>
+                        <span class="w3 kw">Toto</span>
+                        <span class="w3 kw">aprobaron</span>
+                        <span class="w3 kw">millonarios</span>
+                        <span class="w3 ph">explotar petróleo en las Islas Malvinas</span>
+                        <span class="w3 ph">sanción SEGUÍA VIGENTE y fue violada</span>
+                        <span class="w3 ph">Premier Oil PLC</span>
+                        <span class="w3 ph">Secretaría de Energía</span>
+                        <span class="w3 ph">empresa británica</span>
+                        <span class="w3 kw">💣</span>
+                        <span class="w4 ph">Javier Milei</span>
+                        <span class="w4 ph">persona jurídica</span>
+                        <span class="w4 ph">Río Negro</span>
+                        <span class="w4 kw">Rockhopper</span>
+                        <span class="w4 kw">Navitas</span>
+                        <span class="w4 kw">Petroleum</span>
+                        <span class="w4 kw">resolución</span>
+                        <span class="w4 kw">beneficiado</span>
+                        <span class="w4 kw">hidrocarburos</span>
+                        <span class="w4 kw">consorcio</span>
+                        <span class="w4 kw">beneficios</span>
+                        <span class="w4 kw">israelí</span>
+                        <span class="w4 kw">continental</span>
+                        <span class="w4 kw">desarrollar</span>
+                        <span class="w4 kw">Oil</span>
+                        <span class="w4 kw">empresas</span>
+                        <span class="w4 kw">Estado</span>
+                        <span class="w4 kw">Norte</span>
+                        <span class="w4 kw">abril</span>
+                        <span class="w4 kw">firma</span>
+                        <span class="w4 kw">Lion</span>
+                        <span class="w4 kw">gas</span>
+                        <span class="w4 kw">exportar</span>
+                        <span class="w4 kw">cambio</span>
+                        <span class="w4 kw">anuncio</span>
+                        <span class="w4 kw">NOMBRE</span>
+                        <span class="w4 kw">proceso</span>
+                        <span class="w4 kw">actividades</span>
+                        <span class="w4 kw">argentino</span>
+                        <span class="w4 kw">Río</span>
+                        <span class="w4 kw">gracias</span>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-4 text-[11px] text-hg-mut mt-5 pt-4 border-t border-white/10">
+                        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm" style="background:#00FC65"></span>Frases</span>
+                        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm" style="background:#f2f2f2"></span>Palabras</span>
+                        <span class="ml-auto">El tamaño representa la frecuencia relativa del término</span>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-4 panel-strong p-6 rounded-xl flex flex-col justify-center">
+                    <div class="flex items-center gap-2 text-hg-green font-extrabold text-sm uppercase tracking-wider">
+                        <i data-lucide="quote" class="w-5 h-5"></i> Qué dice el vocabulario
+                    </div>
+                    <div class="rule-green w-10 my-4"></div>
+                    <p class="text-xs text-hg-txt/80 leading-relaxed mb-3">Acá la conversación se vuelve <b class="text-white">expediente</b>: sanción, autorización, resolución, persona jurídica, inhabilitada.</p>
+                    <p class="text-xs text-hg-txt/80 leading-relaxed mb-3">Aparecen los nombres propios del caso —Southern, Premier Oil PLC, Rockhopper, Navitas, Secretaría de Energía, Caputo— ausentes en el resto del año.</p>
+                    <p class="text-xs text-hg-txt/80 leading-relaxed mb-3">La frase que ordena el eje es <i>"la sanción seguía vigente y fue violada"</i>: no se discute conveniencia sino <b class="text-white">legalidad</b>. Explica el 82% de sentimiento negativo del encuadre político-económico.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 20: Caso Elsztain y FIC -->
+        <section class="slide w-full h-full max-w-6xl mx-auto flex-col justify-center p-4">
+            <div class="mb-4">
+                <span class="text-[11px] font-bold text-hg-green uppercase tracking-[0.2em]">Debate Soberano</span>
+                <h2 class="display text-2xl md:text-3xl text-white uppercase mt-2">Caso Eduardo Elsztain y la Falkland Islands Co.</h2>
+                <div class="rule-green w-16 mt-3"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="panel p-6 rounded-xl">
+                    <div class="text-[11px] font-bold text-negativo uppercase tracking-wider mb-3">Revelación Accionaria &amp; Crítica</div>
+                    <p class="text-xs text-hg-txt/75 leading-relaxed mb-3">
+                        Detección de participación accionaria (~2,5%) en la matriz dueña de la <b class="text-white">Falkland Islands Company (FIC)</b>, entidad con posición dominante comercial en las islas.
+                    </p>
+                    <p class="text-xs text-hg-mut italic">
+                        Usuarios nacionalistas y opositores tildaron la acción de "incompatibilidad patria" y exigieron pedidos de informes legislativos.
+                    </p>
+                </div>
+
+                <div class="panel p-6 rounded-xl">
+                    <div class="text-[11px] font-bold text-hg-green uppercase tracking-wider mb-3">Defensa y Contranarrativa Liberal</div>
+                    <p class="text-xs text-hg-txt/75 leading-relaxed mb-3">
+                        Sectores afines argumentaron una <i>"estrategia de penetración comercial patriótica"</i> para disputar activos en las islas mediante capital privado argentino.
+                    </p>
+                    <p class="text-xs text-hg-mut italic">
+                        El debate expuso visiones contrapuestas sobre soberanía económica vs. diplomacia de negocios.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 21: Nube de palabras — cadena nacional / eje político -->
+        <section class="slide w-full h-full max-w-6xl mx-auto flex-col justify-center p-4">
+            <div class="mb-4">
+                <span class="text-[11px] font-bold text-hg-green uppercase tracking-[0.2em]">Vocabulario del Eje Político</span>
+                <h2 class="display text-2xl md:text-3xl text-white uppercase mt-2">Nube de Términos: Cadena Nacional</h2>
+                <div class="rule-green w-16 mt-3"></div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+                <div class="lg:col-span-8 panel p-6 rounded-xl flex flex-col">
+                    <div class="flex items-baseline justify-between gap-3 mb-4">
+                        <h3 class="text-sm font-extrabold text-white">Términos y frases más frecuentes</h3>
+                        <span class="text-[10px] text-hg-mut uppercase tracking-wider">1 sep – 9 nov 2026</span>
+                    </div>
+                    <div class="cloud custom-scrollbar overflow-y-auto max-h-[48vh] px-1">
+                        <span class="w1 kw">Milei</span>
+                        <span class="w1 kw">Argentina</span>
+                        <span class="w2 kw">Islas</span>
+                        <span class="w2 kw">gobierno</span>
+                        <span class="w2 kw">nacional</span>
+                        <span class="w2 kw">soberanía</span>
+                        <span class="w2 kw">presidente</span>
+                        <span class="w2 kw">argentinas</span>
+                        <span class="w2 kw">cadena</span>
+                        <span class="w2 ph">cadena nacional</span>
+                        <span class="w3 ph">Malvinas son argentinas</span>
+                        <span class="w3 kw">argentinos</span>
+                        <span class="w3 kw">base</span>
+                        <span class="w3 kw">empresas</span>
+                        <span class="w3 kw">petróleo</span>
+                        <span class="w3 kw">territorio</span>
+                        <span class="w3 ph">Estados Unidos</span>
+                        <span class="w3 kw">defensa</span>
+                        <span class="w3 ph">Reino Unido</span>
+                        <span class="w3 kw">Nación</span>
+                        <span class="w3 kw">explotación</span>
+                        <span class="w3 ph">causa Malvinas</span>
+                        <span class="w3 kw">medidas</span>
+                        <span class="w3 kw">petroleras</span>
+                        <span class="w3 ph">Tierra del Fuego</span>
+                        <span class="w3 kw">Seguridad</span>
+                        <span class="w3 kw">pueblo</span>
+                        <span class="w3 kw">política</span>
+                        <span class="w3 ph">base naval</span>
+                        <span class="w3 kw">proyecto</span>
+                        <span class="w3 kw">recuperar</span>
+                        <span class="w3 kw">🇦🇷</span>
+                        <span class="w3 kw">🇬🇧</span>
+                        <span class="w3 kw">🚨</span>
+                        <span class="w4 kw">guerra</span>
+                        <span class="w4 kw">Estado</span>
+                        <span class="w4 kw">anuncio</span>
+                        <span class="w4 kw">reclamo</span>
+                        <span class="w4 kw">importante</span>
+                        <span class="w4 kw">ministro</span>
+                        <span class="w4 kw">Patria</span>
+                        <span class="w4 kw">recursos</span>
+                        <span class="w4 kw">sanciones</span>
+                        <span class="w4 kw">discurso</span>
+                        <span class="w4 kw">Thatcher</span>
+                        <span class="w4 kw">Trump</span>
+                        <span class="w4 kw">Javier</span>
+                        <span class="w4 kw">causa</span>
+                        <span class="w4 kw">mundo</span>
+                        <span class="w4 kw">jueves</span>
+                        <span class="w4 kw">defender</span>
+                        <span class="w4 kw">empresa</span>
+                        <span class="w4 kw">británica</span>
+                        <span class="w4 kw">británico</span>
+                        <span class="w4 kw">ingleses</span>
+                        <span class="w4 kw">historia</span>
+                        <span class="w4 kw">tema</span>
+                        <span class="w4 kw">país</span>
+                        <span class="w4 kw">intereses</span>
+                        <span class="w4 kw">cambio</span>
+                        <span class="w4 kw">apoyo</span>
+                        <span class="w4 kw">Sur</span>
+                        <span class="w4 kw">Chile</span>
+                        <span class="w4 kw">Inglaterra</span>
+                        <span class="w4 kw">Navitas</span>
+                        <span class="w4 kw">ley</span>
+                        <span class="w4 kw">Israel</span>
+                        <span class="w4 kw">kukas</span>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-4 text-[11px] text-hg-mut mt-5 pt-4 border-t border-white/10">
+                        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm" style="background:#00FC65"></span>Frases</span>
+                        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm" style="background:#f2f2f2"></span>Palabras</span>
+                        <span class="ml-auto">El tamaño representa la frecuencia relativa del término</span>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-4 panel-strong p-6 rounded-xl flex flex-col justify-center">
+                    <div class="flex items-center gap-2 text-hg-green font-extrabold text-sm uppercase tracking-wider">
+                        <i data-lucide="quote" class="w-5 h-5"></i> Qué dice el vocabulario
+                    </div>
+                    <div class="rule-green w-10 my-4"></div>
+                    <p class="text-xs text-hg-txt/80 leading-relaxed mb-3">
+                        El centro se corre del símbolo al <b class="text-white">actor</b>: "Milei" desplaza a la consigna y la conversación pasa a girar sobre el anuncio y la cadena nacional.
+                    </p>
+                    <p class="text-xs text-hg-txt/80 leading-relaxed mb-3">
+                        Emerge un léxico de recursos y jurisdicción —petróleo, petroleras, explotación, territorio, base naval, Tierra del Fuego— ausente en el pico deportivo.
+                    </p>
+                    <p class="text-xs text-hg-txt/80 leading-relaxed">
+                        Y aparecen terceros actores: Estados Unidos, Reino Unido, Chile, Israel. Mismo tema, vocabulario de política exterior.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 22: Infraestructura Digital e IA -->
+        <section class="slide w-full h-full max-w-6xl mx-auto flex-col justify-center p-4">
+            <div class="mb-6">
+                <span class="text-[11px] font-bold text-hg-green uppercase tracking-[0.2em]">Nuevas Tecnologías</span>
+                <h2 class="display text-2xl md:text-3xl text-white uppercase mt-2">Infraestructura Digital e Innovación</h2>
+                <div class="rule-green w-16 mt-3"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="panel p-6 rounded-xl text-center">
+                    <div class="w-12 h-12 mx-auto octagon flex items-center justify-center text-black mb-4" style="background: var(--hg-green);">
+                        <i data-lucide="bot" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-base font-extrabold text-white">Agente @grok (X)</h3>
+                    <div class="display text-3xl text-hg-green my-2">6.57M</div>
+                    <p class="text-xs text-hg-txt/70">Interacciones para auditar la legalidad del RIGI y consultar tratados internacionales.</p>
+                </div>
+
+                <div class="panel p-6 rounded-xl text-center">
+                    <div class="w-12 h-12 mx-auto octagon flex items-center justify-center text-black bg-white mb-4">
+                        <i data-lucide="globe" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-base font-extrabold text-white">Tablero Internacional</h3>
+                    <div class="display text-lg text-white my-2">EE.UU. • OTAN • UK</div>
+                    <p class="text-xs text-hg-txt/70">Seguimiento de posicionamientos geopolíticos sobre el control del Atlántico Sur.</p>
+                </div>
+
+                <div class="panel p-6 rounded-xl text-center">
+                    <div class="w-12 h-12 mx-auto octagon flex items-center justify-center text-black bg-white mb-4">
+                        <i data-lucide="share-2" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-base font-extrabold text-white">Ecosistema Gen-Z</h3>
+                    <div class="display text-lg text-white my-2">TikTok &amp; Instagram</div>
+                    <p class="text-xs text-hg-txt/70">Amplificación de narrativa patriótica y deportiva hacia los segmentos centennials.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 23: Matriz de Encuadres Discursivos -->
+        <section class="slide w-full h-full max-w-6xl mx-auto flex-col justify-center p-4">
+            <div class="mb-4">
+                <span class="text-[11px] font-bold text-hg-green uppercase tracking-[0.2em]">Clasificación</span>
+                <h2 class="display text-2xl md:text-3xl text-white uppercase mt-2">Matriz Completa de Encuadres Discursivos</h2>
+                <div class="rule-green w-16 mt-3"></div>
+            </div>
+
+            <div class="rounded-xl overflow-hidden overflow-x-auto border border-white/10">
+                <table class="w-full text-left border-collapse text-xs">
+                    <thead>
+                        <tr class="bg-white/[0.06] text-white font-extrabold uppercase tracking-wider">
+                            <th class="p-3.5">Encuadre Discursivo</th>
+                            <th class="p-3.5">Dominio &amp; Sentimiento</th>
+                            <th class="p-3.5">Tópicos Clave &amp; Hashtags</th>
+                            <th class="p-3.5">Audiencia Principal</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/10 text-hg-txt/75">
+                        <tr class="hover:bg-white/[0.04]">
+                            <td class="p-3.5 font-extrabold text-white">Deportivo - Identitario</td>
+                            <td class="p-3.5"><span class="bg-hg-green/15 text-hg-green px-2 py-0.5 rounded font-bold">Muy Positivo (90%)</span></td>
+                            <td class="p-3.5">Selección Argentina, Banderas, "Las Malvinas son Argentinas", #Muchachos</td>
+                            <td class="p-3.5">Hinchadas, jóvenes 18-35, público masivo</td>
+                        </tr>
+                        <tr class="hover:bg-white/[0.04]">
+                            <td class="p-3.5 font-extrabold text-white">Político - Económico</td>
+                            <td class="p-3.5"><span class="bg-negativo/15 text-negativo px-2 py-0.5 rounded font-bold">Muy Negativo (82%)</span></td>
+                            <td class="p-3.5">#RIGI, Harbour Energy, YPF, Elsztain, Ley Gaucho Rivero</td>
+                            <td class="p-3.5">Militancia, politólogos, periodistas, legisladores</td>
+                        </tr>
+                        <tr class="hover:bg-white/[0.04]">
+                            <td class="p-3.5 font-extrabold text-white">Geopolítico - Estratégico</td>
+                            <td class="p-3.5"><span class="bg-white/10 text-neutro px-2 py-0.5 rounded font-bold">Neutral (75%)</span></td>
+                            <td class="p-3.5">EE.UU., Reino Unido, OTAN, Base Antártica, Atlántico Sur</td>
+                            <td class="p-3.5">Internacionalistas, analistas de defensa, academia</td>
+                        </tr>
+                        <tr class="hover:bg-white/[0.04]">
+                            <td class="p-3.5 font-extrabold text-white">Homenaje / Efeméride</td>
+                            <td class="p-3.5"><span class="bg-hg-green/15 text-hg-green px-2 py-0.5 rounded font-bold">Positivo / Solemnidad</span></td>
+                            <td class="p-3.5">#2DeAbril, Prohibido Olvidar, Héroes de Malvinas, Excombatientes</td>
+                            <td class="p-3.5">Transversal a toda la sociedad argentina</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Slide 24: Intensidad del sentimiento por encuadre -->
+        <section class="slide w-full h-full max-w-6xl mx-auto flex-col justify-center p-4">
+            <div class="mb-6">
+                <span class="text-[11px] font-bold text-hg-green uppercase tracking-[0.2em]">Lectura Cruzada</span>
+                <h2 class="display text-2xl md:text-3xl text-white uppercase mt-2">Intensidad del Sentimiento por Encuadre</h2>
+                <div class="rule-green w-16 mt-3"></div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+                <div class="lg:col-span-8 panel p-6 rounded-xl">
+                    <h3 class="text-sm font-extrabold text-white">Peso del sentimiento dominante dentro de cada encuadre</h3>
+                    <p class="text-[11px] text-hg-mut mt-1 mb-5">Porcentaje de menciones que responden al tono predominante del eje</p>
+
+                    <!-- Leyenda: la identidad nunca depende sólo del color -->
+                    <div class="flex flex-wrap gap-4 mb-5 text-[11px] text-hg-txt/80">
+                        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm" style="background:#00FC65"></span>Positivo</span>
+                        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm" style="background:#ff4d4d"></span>Negativo</span>
+                        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm" style="background:#8a8a8a"></span>Neutral</span>
+                    </div>
+
+                    <div class="space-y-3.5">
+                        <div class="hbar-row" data-tip="Deportivo – Identitario|Sentimiento positivo|90% de las menciones del eje">
+                            <div class="text-[11px] text-hg-txt/80 leading-tight">Deportivo <span class="block text-[10px] text-hg-mut">Identitario</span></div>
+                            <div class="hbar-track"><div class="hbar-fill" data-w="90%" style="width:90%; background:#00FC65;"></div></div>
+                            <div class="text-xs font-extrabold text-white text-right">90% pos.</div>
+                        </div>
+                        <div class="hbar-row" data-tip="Político – Económico|Sentimiento negativo|82% de las menciones del eje">
+                            <div class="text-[11px] text-hg-txt/80 leading-tight">Político <span class="block text-[10px] text-hg-mut">Económico</span></div>
+                            <div class="hbar-track"><div class="hbar-fill" data-w="82%" style="width:82%; background:#ff4d4d;"></div></div>
+                            <div class="text-xs font-extrabold text-white text-right">82% neg.</div>
+                        </div>
+                        <div class="hbar-row" data-tip="Geopolítico – Estratégico|Sentimiento neutral|75% de las menciones del eje">
+                            <div class="text-[11px] text-hg-txt/80 leading-tight">Geopolítico <span class="block text-[10px] text-hg-mut">Estratégico</span></div>
+                            <div class="hbar-track"><div class="hbar-fill" data-w="75%" style="width:75%; background:#8a8a8a;"></div></div>
+                            <div class="text-xs font-extrabold text-white text-right">75% neu.</div>
+                        </div>
+                        <div class="hbar-row" data-tip="Homenaje / Efeméride|Positivo / Solemnidad|Sin porcentaje asignado en el relevamiento">
+                            <div class="text-[11px] text-hg-txt/80 leading-tight">Homenaje <span class="block text-[10px] text-hg-mut">Efeméride</span></div>
+                            <div class="hbar-track"><div class="hbar-fill" data-w="0%" style="width:0%; background:#00FC65;"></div></div>
+                            <div class="text-[11px] text-hg-mut text-right">s/%</div>
+                        </div>
+                    </div>
+
+                    <p class="text-[10px] text-hg-mut mt-5 pt-4 border-t border-white/10">
+                        El eje Homenaje / Efeméride se releva como positivo-solemne pero no tiene porcentaje asignado en la matriz; se muestra sin barra para no imputar un valor inexistente.
+                    </p>
+                </div>
+
+                <div class="lg:col-span-4 panel-strong p-6 rounded-xl flex flex-col justify-center">
+                    <div class="flex items-center gap-2 text-hg-green font-extrabold text-sm uppercase tracking-wider">
+                        <i data-lucide="git-compare" class="w-5 h-5"></i> Cómo leerlo
+                    </div>
+                    <div class="rule-green w-10 my-4"></div>
+                    <p class="text-xs text-hg-txt/80 leading-relaxed mb-3">
+                        El sentimiento no es un atributo de la causa sino del <b class="text-white">encuadre</b> desde el que se la nombra: el mismo tema pasa de 90% positivo a 82% negativo según quién lo active.
+                    </p>
+                    <p class="text-xs text-hg-txt/80 leading-relaxed">
+                        Es la evidencia cuantitativa de la primera recomendación: traccionar por deporte y cultura sostiene el consenso; encuadrar en clave político-partidaria lo polariza.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 25: Demografía -->
+        <section data-chart="age" class="slide w-full h-full max-w-6xl mx-auto flex-col justify-center p-4">
+            <div class="mb-4">
+                <span class="text-[11px] font-bold text-hg-green uppercase tracking-[0.2em]">Segmentación</span>
+                <h2 class="display text-2xl md:text-3xl text-white uppercase mt-2">Demografía y Perfil de Audiencias Activas</h2>
+                <div class="rule-green w-16 mt-3"></div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                <div class="lg:col-span-5 panel p-6 rounded-xl flex flex-col items-center">
+                    <h3 class="text-[11px] font-bold text-hg-mut uppercase tracking-[0.2em] mb-4">Distribución Etaria</h3>
+                    <div class="w-56 h-56 relative">
+                        <canvas id="ageChart"></canvas>
+                    </div>
+                    <div class="flex flex-wrap justify-center gap-3 mt-4 text-[11px] text-hg-mut">
+                        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 octagon" style="background:#00FC65"></span>18-29 (41%)</span>
+                        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 octagon bg-white"></span>30-49 (45%)</span>
+                        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 octagon bg-neutro"></span>50+ (14%)</span>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-7 space-y-4">
+                    <div class="panel p-5 rounded-xl">
+                        <h4 class="text-sm font-extrabold text-white mb-3">Distribución por Género</h4>
+                        <div class="flex items-center gap-4">
+                            <div class="flex-1 bg-white/10 rounded-full h-4 overflow-hidden flex">
+                                <div class="h-full" style="width: 62%; background: var(--hg-green);" title="62% Hombres"></div>
+                                <div class="h-full bg-white/40" style="width: 38%" title="38% Mujeres"></div>
+                            </div>
+                            <span class="text-xs text-hg-txt/80 font-bold">62% M | 38% F</span>
+                        </div>
+                    </div>
+
+                    <div class="panel p-5 rounded-xl">
+                        <h4 class="text-sm font-extrabold text-white mb-3">Perfiles Profesionales Activos</h4>
+                        <div class="flex flex-wrap gap-2 text-xs">
+                            <span class="px-2.5 py-1 bg-white/[0.06] border border-white/10 text-hg-txt/80 rounded">Estudiantes &amp; Jóvenes</span>
+                            <span class="px-2.5 py-1 bg-white/[0.06] border border-white/10 text-hg-txt/80 rounded">Periodistas &amp; Medios</span>
+                            <span class="px-2.5 py-1 bg-white/[0.06] border border-white/10 text-hg-txt/80 rounded">Politólogos &amp; Internacionalistas</span>
+                            <span class="px-2.5 py-1 bg-white/[0.06] border border-white/10 text-hg-txt/80 rounded">Veteranos de Guerra</span>
+                            <span class="px-2.5 py-1 bg-white/[0.06] border border-white/10 text-hg-txt/80 rounded">Sector Energético &amp; IT</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 26: Conclusiones y Recomendaciones -->
+        <section class="slide w-full h-full max-w-6xl mx-auto flex-col justify-center p-4">
+            <div class="mb-6">
+                <span class="text-[11px] font-bold text-hg-green uppercase tracking-[0.2em]">Cierre Estratégico</span>
+                <h2 class="display text-2xl md:text-3xl text-white uppercase mt-2">Conclusiones y Recomendaciones</h2>
+                <div class="rule-green w-16 mt-3"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="panel p-6 rounded-xl border-t-2" style="border-top-color: var(--hg-green);">
+                    <div class="w-9 h-9 octagon text-black font-extrabold flex items-center justify-center mb-4" style="background: var(--hg-green);">1</div>
+                    <h3 class="text-base font-extrabold text-white mb-2">Desvinculación Partidaria</h3>
+                    <p class="text-xs text-hg-txt/75 leading-relaxed">
+                        La Causa Malvinas conserva consenso total cuando se tracciona mediante deporte y cultura, pero sufre polarización cuando se asocia a disputas político-partidarias.
+                    </p>
+                </div>
+
+                <div class="panel p-6 rounded-xl border-t-2" style="border-top-color: var(--hg-green);">
+                    <div class="w-9 h-9 octagon text-black font-extrabold flex items-center justify-center mb-4" style="background: var(--hg-green);">2</div>
+                    <h3 class="text-base font-extrabold text-white mb-2">Transparencia Normativa</h3>
+                    <p class="text-xs text-hg-txt/75 leading-relaxed">
+                        Ante la sensibilidad por recursos en el Atlántico Sur, se sugiere comunicación proactiva e institucional en materia de fiscalización offshore y soberanía energética.
+                    </p>
+                </div>
+
+                <div class="panel p-6 rounded-xl border-t-2" style="border-top-color: var(--hg-green);">
+                    <div class="w-9 h-9 octagon text-black font-extrabold flex items-center justify-center mb-4" style="background: var(--hg-green);">3</div>
+                    <h3 class="text-base font-extrabold text-white mb-2">Auditoría de Algoritmos e IA</h3>
+                    <p class="text-xs text-hg-txt/75 leading-relaxed">
+                        Dada la masiva adopción de bots como @grok (6,57M de interacciones), resulta prioritario monitorear las fuentes históricas empleadas por la IA para evitar sesgos discursivos.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 27: Cierre -->
+        <section class="slide w-full h-full max-w-6xl mx-auto flex-col justify-center items-center text-center p-6">
+            <div class="relative flex items-center justify-center">
+                <div class="octagon bg-white/[0.06] w-[560px] h-[340px] max-w-[85vw] absolute"></div>
+                <div class="relative z-10">
+                    <h2 class="display text-4xl md:text-6xl text-white uppercase">Muchas Gracias</h2>
+                    <div class="text-hg-green font-extrabold text-sm mt-3">www.hegemon.com.ar</div>
+                </div>
+            </div>
+            <div class="flex items-center gap-3 mt-12">
+                <div class="w-8 h-8 octagon" style="background: var(--hg-green);"></div>
+                <span class="display text-xl text-white uppercase">Hegemón</span>
+                <span class="text-hg-mut text-sm ml-2">2026</span>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Barra inferior de navegación -->
+    <footer class="no-print h-16 border-t border-white/10 bg-black/40 backdrop-blur-md px-6 flex items-center justify-between z-30 shrink-0">
+        <div class="flex items-center space-x-2 text-[11px] text-hg-mut font-medium uppercase tracking-wider">
+            <span>Diapositiva</span>
+            <span id="currentSlideNum" class="text-hg-green font-extrabold">1</span>
+            <span>de</span>
+            <span id="totalSlidesNum" class="text-white">18</span>
+        </div>
+
+        <div class="flex-1 max-w-xs mx-4 bg-white/10 h-1 rounded-full overflow-hidden">
+            <div id="progressBar" class="h-full transition-all duration-300" style="width: 5.55%; background: var(--hg-green);"></div>
+        </div>
+
+        <div class="flex items-center space-x-2">
+            <button id="btnPrev" class="px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-white border border-white/10 transition flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider">
+                <i data-lucide="chevron-left" class="w-4 h-4"></i> Anterior
+            </button>
+            <button id="btnNext" class="px-3 py-2 rounded-lg bg-hg-green hover:bg-white text-black transition flex items-center gap-1 text-[11px] font-extrabold uppercase tracking-wider">
+                Siguiente <i data-lucide="chevron-right" class="w-4 h-4"></i>
+            </button>
+        </div>
+    </footer>
+
+    <!-- Modal de Grilla -->
+    <div id="overviewModal" class="fixed inset-0 bg-black/95 backdrop-blur-xl z-50 hidden flex-col p-6 overflow-y-auto">
+        <div class="flex items-center justify-between mb-6 max-w-7xl mx-auto w-full">
+            <h2 class="display text-lg text-white uppercase flex items-center gap-3">
+                <span class="w-6 h-6 octagon" style="background: var(--hg-green);"></span> Índice de Diapositivas
+            </h2>
+            <button id="btnCloseOverview" class="p-2 rounded-lg bg-white/5 border border-white/10 text-hg-mut hover:text-white">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+        <div id="overviewGrid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 max-w-7xl mx-auto w-full">
+            <!-- Tarjetas dinámicas -->
+        </div>
+    </div>
+
+    <script>
+        // --- Utilidades defensivas: ninguna librería externa puede romper la navegación ---
+        function drawIcons() {
+            try { if (window.lucide && lucide.createIcons) lucide.createIcons(); } catch (e) { console.warn('lucide', e); }
+        }
+        drawIcons();
+        window.addEventListener('load', drawIcons);
+
+        // --- Barras nativas: animación al entrar a la diapositiva ---
+        function animateBars(slide) {
+            if (!slide) return;
+            slide.querySelectorAll('.hbar-fill').forEach(el => {
+                if (el.dataset.done) return;
+                el.dataset.done = '1';
+                const w = el.dataset.w || el.style.width;
+                el.style.width = '0%';
+                requestAnimationFrame(() => requestAnimationFrame(() => { el.style.width = w; }));
+            });
+        }
+
+        // --- Tooltip compartido para las barras ---
+        const tip = document.createElement('div');
+        tip.className = 'chart-tip';
+        document.body.appendChild(tip);
+        function showTip(el, e) {
+            const parts = (el.dataset.tip || '').split('|');
+            tip.innerHTML = parts.map((t, i) => i === 0 ? `<b>${t}</b>` : t).join('<br>');
+            tip.style.opacity = '1';
+            moveTip(e);
+        }
+        function moveTip(e) {
+            const pad = 14;
+            let x = e.clientX + pad, y = e.clientY + pad;
+            const r = tip.getBoundingClientRect();
+            if (x + r.width > window.innerWidth - 8) x = e.clientX - r.width - pad;
+            if (y + r.height > window.innerHeight - 8) y = e.clientY - r.height - pad;
+            tip.style.left = x + 'px';
+            tip.style.top = y + 'px';
+        }
+        document.addEventListener('mousemove', (e) => {
+            const el = e.target.closest('[data-tip]');
+            if (el) { showTip(el, e); } else { tip.style.opacity = '0'; }
+        });
+
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        let currentSlide = 0;
+
+        document.getElementById('totalSlidesNum').textContent = totalSlides;
+
+        function showSlide(index) {
+            if (index < 0) index = 0;
+            if (index >= totalSlides) index = totalSlides - 1;
+
+            slides.forEach((slide, i) => {
+                slide.classList.toggle('active', i === index);
+            });
+
+            currentSlide = index;
+            document.getElementById('currentSlideNum').textContent = currentSlide + 1;
+            document.getElementById('progressBar').style.width = `${((currentSlide + 1) / totalSlides) * 100}%`;
+
+            try {
+                // El gráfico se identifica por data-chart, no por número de slide,
+                // así reordenar o agregar diapositivas nunca lo rompe.
+                const kind = slides[currentSlide].dataset.chart;
+                if (kind === 'sentiment' && !sentimentChartInstance) initSentimentChart();
+                if (kind === 'peaks' && !peaksChartInstance) initPeaksChart();
+                if (kind === 'age' && !ageChartInstance) initAgeChart();
+                animateBars(slides[currentSlide]);
+            } catch (e) { console.warn('chart', e); }
+            drawIcons();
+        }
+
+        function nextSlide() { if (currentSlide < totalSlides - 1) showSlide(currentSlide + 1); }
+        function prevSlide() { if (currentSlide > 0) showSlide(currentSlide - 1); }
+        window.showSlide = showSlide; window.nextSlide = nextSlide; window.prevSlide = prevSlide;
+
+        document.addEventListener('keydown', (e) => {
+            const k = (e.key || '').toLowerCase();
+            if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') {
+                e.preventDefault(); nextSlide();
+            } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+                e.preventDefault(); prevSlide();
+            } else if (e.key === 'Home') { showSlide(0); }
+            else if (e.key === 'End') { showSlide(totalSlides - 1); }
+            else if (k === 'escape') { closeOverview(); }
+            else if (k === 'o') { toggleOverview(); }
+            else if (k === 'f') { toggleFullscreen(); }
+        });
+
+        // Navegación táctil / swipe
+        let touchX = null;
+        document.addEventListener('touchstart', e => { touchX = e.changedTouches[0].clientX; }, { passive: true });
+        document.addEventListener('touchend', e => {
+            if (touchX === null) return;
+            const dx = e.changedTouches[0].clientX - touchX;
+            if (Math.abs(dx) > 60) { dx < 0 ? nextSlide() : prevSlide(); }
+            touchX = null;
+        }, { passive: true });
+
+        // Pantalla completa, con respaldo si el navegador la bloquea (iframe / visor)
+        function fallbackPresentation() {
+            document.body.classList.toggle('presentation-mode');
+        }
+        function toggleFullscreen() {
+            try {
+                if (!document.fullscreenElement) {
+                    const req = document.documentElement.requestFullscreen
+                        || document.documentElement.webkitRequestFullscreen;
+                    if (!req) { fallbackPresentation(); return; }
+                    const p = req.call(document.documentElement);
+                    if (p && p.catch) p.catch(() => fallbackPresentation());
+                } else {
+                    if (document.exitFullscreen) document.exitFullscreen();
+                    else fallbackPresentation();
+                }
+            } catch (e) { fallbackPresentation(); }
+        }
+        window.toggleFullscreen = toggleFullscreen;
+
+        const overviewModal = document.getElementById('overviewModal');
+        const overviewGrid = document.getElementById('overviewGrid');
+
+        function openOverview() {
+            buildOverviewGrid();
+            overviewModal.classList.remove('hidden');
+            overviewModal.classList.add('flex');
+        }
+        function closeOverview() {
+            overviewModal.classList.add('hidden');
+            overviewModal.classList.remove('flex');
+        }
+        function toggleOverview() {
+            overviewModal.classList.contains('hidden') ? openOverview() : closeOverview();
+        }
+        window.toggleOverview = toggleOverview;
+        window.closeOverview = closeOverview;
+
+        // Cerrar la grilla al hacer clic en el fondo
+        overviewModal.addEventListener('click', (e) => { if (e.target === overviewModal) closeOverview(); });
+
+        function bind(id, fn) {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener('click', fn);
+        }
+        bind('btnFullscreen', toggleFullscreen);
+        bind('btnOverview', toggleOverview);
+        bind('btnCloseOverview', closeOverview);
+        bind('btnPrev', prevSlide);
+        bind('btnNext', nextSlide);
+        bind('btnStart', nextSlide);
+
+        function buildOverviewGrid() {
+            overviewGrid.innerHTML = '';
+            slides.forEach((slide, idx) => {
+                const title = slide.querySelector('h1, h2, h3')?.innerText || `Diapositiva ${idx + 1}`;
+                const card = document.createElement('div');
+                const active = idx === currentSlide;
+                card.className = `p-4 rounded-lg border text-xs cursor-pointer transition flex flex-col justify-between h-32 ${active ? 'bg-white/10 text-white' : 'bg-white/[0.035] border-white/10 text-hg-txt/75 hover:border-white/30'}`;
+                if (active) card.style.borderColor = '#00FC65';
+                card.innerHTML = `
+                    <span class="text-[10px] font-extrabold" style="color:#00FC65">#${idx + 1}</span>
+                    <div class="font-extrabold line-clamp-2 mt-1 uppercase">${title}</div>
+                    <div class="text-[9px] text-hg-mut mt-auto">Clic para ir</div>
+                `;
+                card.onclick = () => { showSlide(idx); closeOverview(); };
+                overviewGrid.appendChild(card);
+            });
+        }
+
+        // Charts
+        let sentimentChartInstance = null;
+        let peaksChartInstance = null;
+        let ageChartInstance = null;
+
+        const GREEN = '#00FC65';
+        const GREY = '#8a8a8a';
+        const WHITE = '#f2f2f2';
+        const RED = '#ff4d4d';
+
+        function initSentimentChart() {
+            if (typeof Chart === 'undefined') return;
+            const ctx = document.getElementById('sentimentChart')?.getContext('2d');
+            if (!ctx) return;
+            sentimentChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Negativo', 'Neutral', 'Positivo'],
+                    datasets: [{
+                        data: [48, 43, 9],
+                        backgroundColor: [RED, GREY, GREEN],
+                        borderColor: '#0d0d0d',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    cutout: '70%'
+                }
+            });
+        }
+
+        function initPeaksChart() {
+            if (typeof Chart === 'undefined') return;
+            const ctx = document.getElementById('peaksChart')?.getContext('2d');
+            if (!ctx) return;
+            peaksChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Pico A (Selección)', 'Pico B (RIGI/YPF)', 'Pico C (2 de Abril)', 'Pico D (Alerta Británica)'],
+                    datasets: [{
+                        label: 'Menciones',
+                        data: [2100000, 680000, 510000, 210000],
+                        backgroundColor: [GREEN, RED, WHITE, GREY],
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { ticks: { color: '#9a9a9a', font: { size: 10 } }, grid: { display: false } },
+                        y: { ticks: { color: '#9a9a9a', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.06)' } }
+                    }
+                }
+            });
+        }
+
+        function initAgeChart() {
+            if (typeof Chart === 'undefined') return;
+            const ctx = document.getElementById('ageChart')?.getContext('2d');
+            if (!ctx) return;
+            ageChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['18-29 años', '30-49 años', '50+ años'],
+                    datasets: [{
+                        data: [41, 45, 14],
+                        backgroundColor: [GREEN, WHITE, GREY],
+                        borderColor: '#0d0d0d',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    cutout: '65%'
+                }
+            });
+        }
+    </script>
+</body>
+</html>
